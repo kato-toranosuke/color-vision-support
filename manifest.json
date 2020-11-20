@@ -9,7 +9,8 @@
       ],
       "js": [
         "color-change.js"
-      ]
+	  ],
+	  "hoge":[]
     }
   ]
 }

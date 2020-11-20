@@ -1,12 +1,16 @@
 
 //いいねを消し去る
 function color_change() {
-  var element = document.getElementById('target');
-  console.log(element);
 
-  var style = getComputedStyle(element, null);
+	document.getElementById('imagine').style.color = "blue";
+	// var element = document.getElementById('imagine');
+	// console.log(element);
 
-  alert(style.color);
+	// var style = getComputedStyle(element,null);
+
+	// console.log(style.color);
+
+	// style.color = "blue";
 }
 
 color_change();
