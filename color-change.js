@@ -1,8 +1,12 @@
 
 //いいねを消し去る
-function color_change() {
+function main() {
 
-	document.getElementById('imagine').style.color = "blue";
+	var body = document.getElementsByTagName('body')[0];
+	//let children = body.children;
+
+	children_color_change(body);
+
 	// var element = document.getElementById('imagine');
 	// console.log(element);
 
@@ -13,7 +17,22 @@ function color_change() {
 	// style.color = "blue";
 }
 
-color_change();
+function children_color_change(element) {
+	let children = element.children;
+
+	for(let child of children) {
+		if(child.children.length != 0) {
+			children_color_change(child);
+		}
+		change_color(child);
+	}
+}
+
+function change_color(element) {
+	element.style.color = "blue";
+}
+
+main();
 
 
 // //ストリーム変更時にいいねを消し去る
@@ -38,4 +57,3 @@ color_change();
 //     attributes: true,
 //     childList: true
 // });
-
