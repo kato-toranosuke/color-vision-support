@@ -1,20 +1,8 @@
-
-//いいねを消し去る
 function main() {
 
 	var body = document.getElementsByTagName('body')[0];
-	//let children = body.children;
 
 	children_color_change(body);
-
-	// var element = document.getElementById('imagine');
-	// console.log(element);
-
-	// var style = getComputedStyle(element,null);
-
-	// console.log(style.color);
-
-	// style.color = "blue";
 }
 
 function children_color_change(element) {
