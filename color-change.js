@@ -1,5 +1,6 @@
 
 //いいねを消し去る
+// 変更テスト
 function main() {
 
 	var body = document.getElementsByTagName('body')[0];
