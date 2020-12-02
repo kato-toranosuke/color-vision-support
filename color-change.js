@@ -35,6 +35,12 @@ function change_color(element) {
 main();
 
 
+// 背景食をグレースケールに変換する
+function background2grey(rgb) {
+	return rgb;
+}
+
+
 // //ストリーム変更時にいいねを消し去る
 // function ObserveStream(){
 //     //オブザーバーの作成
