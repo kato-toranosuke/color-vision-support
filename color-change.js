@@ -28,6 +28,15 @@ function background2grey(rgb) {
 	return rgb;
 }
 
+// 色を近似する
+function classify_colors(rgb) {
+	return new_rgb;
+}
+
+// 要素の色を取得する
+function get_element_color(node) {
+	return rgb;
+}
 
 // //ストリーム変更時にいいねを消し去る
 // function ObserveStream(){
