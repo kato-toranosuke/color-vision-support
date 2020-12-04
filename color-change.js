@@ -30,6 +30,7 @@ function background2grey(rgb) {
 
 // 色を近似する
 function classify_colors(rgb) {
+	hugahuga;
 	return new_rgb;
 }
 
