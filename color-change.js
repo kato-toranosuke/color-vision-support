@@ -3,17 +3,33 @@ function main() {
 	var body = document.getElementsByTagName('body')[0];
 
 	children_color_change(body);
+	// 全ての要素に対して背景色をグレースケールに変換する
+	children_bc_change(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 }
 
 function children_color_change(element) {
 	let children = element.children;
 
-	for (let child of children) {
+	for(let child of children) {
 		if (child.children.length != 0) {
 			children_color_change(child);
 		}
 		change_color(child);
-		background2grey(child);
+	}
+}
+
+// 各要素に対してbackground2greyを適用する
+// 背景色が未設定の場合は親の要素の設定に従う
+function children_bc_change(element, bc) {
+	let children = element.children;
+
+	for(let child of children) {
+		if( !background2grey(child) ) {
+			child.style.backgroundColor = bc;
+		}
+		if (child.children.length != 0) {
+			children_color_change(child, child.style.backgroundColor);
+		}
 	}
 }
 
@@ -24,31 +40,30 @@ function change_color(element) {
 main();
 
 
-// 背景食をグレースケールに変換する
+// 背景色が設定されていればグレースケールに変換する
 function background2grey(element) {
-	console.log("---------------------------------");
-	console.log(element);
-	let cssStyle = getComputedStyle(element, null);
-	let bc = cssStyle.getPropertyValue("background-color");
-
-	console.log("bc: " + bc);
+	// console.log(element);
+	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
+	// console.log(bc);
 	let rgb = bc2rgb(bc);
-	console.log(rgb);
+	// console.log("rgb: "+rgb)
 
-	// element.style.backgroundColor = "grey";
+	// 背景色が未設定かどうか
 	if( rgb[0]+rgb[1]+rgb[2]+rgb[3] == 0 ) {
-		console.log("undefined?");
-		element.style.backgroundColor = "rgb(255,255,255)";
+		return false;
 	}
 	else {
-		var gs = (rgb[0]+rgb[1]+rgb[2]) / (3*4);
-		gs = parseInt(gs + 150);
+		let gs = (rgb[0]+rgb[1]+rgb[2]) / 3;
+		gs = parseInt(gs/3 + 170);  // ここでグレースケールの濃淡の調整
 		bc = "rgb(" + gs + "," + gs + "," + gs + ")";
-		console.log("after: " + bc);
 		element.style.backgroundColor = bc;
+		console.log(bc);
+		return true;
 	}
 }
 
+// 文字列のrgb値から数値の配列に変換する
+// res: [rの値, gの値, bの値, aの値]
 function bc2rgb(bc) {
 	let start = bc.indexOf('(');
 	let end = bc.indexOf(')');
