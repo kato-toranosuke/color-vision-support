@@ -23,7 +23,7 @@ function change_color(element) {
 main();
 
 
-// 背景食をグレースケールに変換する
+// 背景色をグレースケールに変換する
 function background2grey(rgb) {
 	return rgb;
 }
