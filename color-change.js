@@ -19,6 +19,7 @@ function main() {
 	children_bc_change(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 }
 
+
 function children_color_change(element) {
 	let children = element.children;
 
@@ -30,49 +31,8 @@ function children_color_change(element) {
 	}
 }
 
-// 各要素に対してbackground2greyを適用する
-// 背景色が未設定の場合は親の要素の設定に従う
-function children_bc_change(element, bc) {
-	let children = element.children;
-
-	for(let child of children) {
-		if( !background2grey(child) ) {
-			child.style.backgroundColor = bc;
-		}
-		if (child.children.length != 0) {
-			children_color_change(child, child.style.backgroundColor);
-		}
-	}
-}
-
-async function log_element(element) {
-	console.log(element);
-}
-
-async function get_element_color(element) {
-	let css = getComputedStyle(element, null);
-	let rgb_color = css.getPropertyValue("color");
-
-	let reg = /(?<=rgb\().*(?=\))/;
-	let result = rgb_color.match(reg);
-	let result2 = result[0].split(',');
-
-	let rgb = [];
-	rgb[0] = Number(result2[0]);
-	rgb[1] = Number(result2[1]);
-	rgb[2] = Number(result2[2]);
-
-	var new_rgb = classify_colors(rgb);
-
-	//return rgb;
-	const new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
-	element.style.color = new_rgb_str;
-}
-
 async function change_color(element) {
 	console.log(element);
-	// await log_element(element);
-	// await get_element_color(element);
 
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
@@ -94,43 +54,6 @@ async function change_color(element) {
 	element.style.color = new_rgb_str;
 
 	return;
-}
-
-
-// 背景色が設定されていればグレースケールに変換する
-function background2grey(element) {
-	// console.log(element);
-	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
-	// console.log(bc);
-	let rgb = bc2rgb(bc);
-	// console.log("rgb: "+rgb)
-
-	// 背景色が未設定かどうか
-	if( rgb[0]+rgb[1]+rgb[2]+rgb[3] == 0 ) {
-		return false;
-	}
-	else {
-		let gs = (rgb[0]+rgb[1]+rgb[2]) / 3;
-		gs = parseInt(gs);  // ここでグレースケールの濃淡の調整
-		bc = "rgb(" + gs + "," + gs + "," + gs + ")";
-		element.style.backgroundColor = bc;
-		console.log(bc);
-		return true;
-	}
-}
-
-// 文字列のrgb値から数値の配列に変換する
-// res: [rの値, gの値, bの値, aの値]
-function bc2rgb(bc) {
-	let start = bc.indexOf('(');
-	let end = bc.indexOf(')');
-	let str = bc.substr(start + 1, end - start - 1).split(',');
-	let rgb = [1, 1, 1, 1];
-	let i = 0;
-	for (let val of str) {
-		rgb[i++] = Number(val);
-	}
-	return rgb;
 }
 
 function classify_colors(rgb) {
@@ -265,6 +188,58 @@ function rgb2hsv (rgb) {
 	var v = max ;
 
 	return [ h, s, v ] ;
+}
+
+
+// 各要素に対してbackground2greyを適用する
+// 背景色が未設定の場合は親の要素の設定に従う
+function children_bc_change(element, bc) {
+	let children = element.children;
+
+	for(let child of children) {
+		if( !background2grey(child) ) {
+			child.style.backgroundColor = bc;
+		}
+		if (child.children.length != 0) {
+			children_color_change(child, child.style.backgroundColor);
+		}
+	}
+}
+
+// 背景色が設定されていればグレースケールに変換する
+function background2grey(element) {
+	// console.log(element);
+	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
+	// console.log(bc);
+	let rgb = bc2rgb(bc);
+	// console.log("rgb: "+rgb)
+
+	// 背景色が未設定かどうか
+	if( rgb[0]+rgb[1]+rgb[2]+rgb[3] == 0 ) {
+		return false;
+	}
+	else {
+		let gs = (rgb[0]+rgb[1]+rgb[2]) / 3;
+		gs = parseInt(gs);  // ここでグレースケールの濃淡の調整
+		bc = "rgb(" + gs + "," + gs + "," + gs + ")";
+		element.style.backgroundColor = bc;
+		console.log(bc);
+		return true;
+	}
+}
+
+// 文字列のrgb値から数値の配列に変換する
+// res: [rの値, gの値, bの値, aの値]
+function bc2rgb(bc) {
+	let start = bc.indexOf('(');
+	let end = bc.indexOf(')');
+	let str = bc.substr(start + 1, end - start - 1).split(',');
+	let rgb = [1, 1, 1, 1];
+	let i = 0;
+	for (let val of str) {
+		rgb[i++] = Number(val);
+	}
+	return rgb;
 }
 
 main();
