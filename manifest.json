@@ -9,7 +9,7 @@
 		"https://ja.wikipedia.org/*"
       ],
       "js": [
-        "color-change.js"
+        "test.js"
 	  ]
     }
   ]
