@@ -1,5 +1,3 @@
-main();
-
 // 色を近似する
 // h: 0~360, s: 0~100, v:0~100
 const sample_colors = [
@@ -101,19 +99,18 @@ function background2grey(element) {
 function bc2rgb(bc) {
 	let start = bc.indexOf('(');
 	let end = bc.indexOf(')');
-	let str = bc.substr(start+1, end-start-1).split(',');
+	let str = bc.substr(start + 1, end - start - 1).split(',');
 	let rgb = [1, 1, 1, 1];
-	let i=0;
-	for(let val of str) {
+	let i = 0;
+	for (let val of str) {
 		rgb[i++] = Number(val);
 	}
+	return rgb;
+}
 
 function classify_colors(rgb) {
-	console.log(rgb);
 	var hsv = rgb2hsv(rgb);
 	var hue = hsv[0];
-
-	console.log(hue);
 
 	if(hue < 10){
 		// black
@@ -234,3 +231,5 @@ function rgb2hsv (rgb) {
 
 	return [ h, s, v ] ;
 }
+
+main();
