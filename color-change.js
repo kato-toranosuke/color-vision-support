@@ -61,9 +61,11 @@ function classify_colors(rgb) {
 	// h = 0~360, s,v=0~1
 	var hue = hsv[0];
 	var sat = hsv[1];
+	var bri = hsv[2];
 
 	// 有彩色の場合
-	if(sat != 0){
+	if(sat > 0.1){
+	//if(sat != 0){
 		if(hue < 34){
 			// red
 			hsv[0] = sample_colors[0].color.h;
