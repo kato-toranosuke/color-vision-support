@@ -1,17 +1,15 @@
 {
-  "manifest_version": 2,
-  "name": "ColorChange",
-  "version": "1",
-  "content_scripts": [
-    {
-      "matches": [
-		"https://color-test-jikken.herokuapp.com/*",
-		"https://ja.wikipedia.org/*"
-      ],
-      "js": [
-        "color-change.js"
-	  ]
-    }
-  ]
+	"manifest_version": 2,
+	"name": "ColorChange",
+	"version": "1",
+	"content_scripts": [
+		{
+			"matches": [
+				"https://*/*"
+			],
+			"js": [
+				"color-change.js"
+			]
+		}
+	]
 }
-
