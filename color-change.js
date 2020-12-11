@@ -32,11 +32,11 @@ function children_color_change(element) {
 }
 
 async function change_color(element) {
-	console.log(element);
+	//console.log(element);
 
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
-	console.log(rgb_color);
+	//console.log(rgb_color);
 
 	let reg = /(?<=rgb\().*(?=\))/;
 	let result = rgb_color.match(reg);
@@ -212,7 +212,7 @@ function children_bc_change(element, bc) {
 			child.style.backgroundColor = bc;
 		}
 		if (child.children.length != 0) {
-			children_color_change(child, child.style.backgroundColor);
+			children_bc_change(child, child.style.backgroundColor);
 		}
 	}
 }
