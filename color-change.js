@@ -1,13 +1,13 @@
 // 色を近似する
 // h: 0~360, s: 0~100, v:0~100
 const sample_colors = [
-	{ name: 'red', color: { h: 27, s: 100, v: 100 } },
-	{ name: 'orange', color: { h: 41, s: 100, v: 100 } },
-	{ name: 'yellow', color: { h: 56, s: 100, v: 100 } },
-	{ name: 'green', color: { h: 164, s: 100, v: 100 } },
-	{ name: 'skyblue', color: { h: 200, s: 100, v: 100 } },
-	{ name: 'blue', color: { h: 230, s: 100, v: 100 } },
-	{ name: 'pink', color: { h: 326, s: 100, v: 100 } },
+	{ name: 'red', color: { h: 27, s: 1.0, v: 1.0 } },
+	{ name: 'orange', color: { h: 41, s: 1.0, v: 1.0 } },
+	{ name: 'yellow', color: { h: 56, s: 1.0, v: 1.0 } },
+	{ name: 'green', color: { h: 164, s: 1.0, v: 1.0 } },
+	{ name: 'skyblue', color: { h: 200, s: 1.0, v: 1.0 } },
+	{ name: 'blue', color: { h: 230, s: 1.0, v: 1.0 } },
+	{ name: 'pink', color: { h: 326, s: 1.0, v: 1.0 } },
 ];
 
 function main() {
@@ -40,7 +40,13 @@ async function change_color(element) {
 
 	let reg = /(?<=rgb\().*(?=\))/;
 	let result = rgb_color.match(reg);
-	let result2 = result[0].split(',');
+	let result2;
+	if (result === null) {
+		result2 = ['255', '255', '255'];
+		console.log(element);
+	} else {
+		result2 = result[0].split(',');
+	}
 
 	let rgb = [];
 	rgb[0] = Number(result2[0]);
@@ -57,6 +63,7 @@ async function change_color(element) {
 }
 
 function classify_colors(rgb) {
+	// console.log(rgb);
 	var hsv = rgb2hsv(rgb);
 	// h = 0~360, s,v=0~1
 	var hue = hsv[0];
@@ -64,8 +71,9 @@ function classify_colors(rgb) {
 	var bri = hsv[2];
 
 	// 有彩色の場合
-	if(sat > 0.1){
-	//if(sat != 0){
+	if (sat > 0.3 && bri > 0.3) {
+		console.log("有彩色");
+
 		if(hue < 34){
 			// red
 			hsv[0] = sample_colors[0].color.h;
@@ -102,12 +110,12 @@ function classify_colors(rgb) {
 			hsv[1] = sample_colors[6].color.s;
 			hsv[2] = sample_colors[6].color.v;
 		}
+	} else {
+		console.log("無彩色");
 	}
 
-	hsv[1] = hsv[1] / 100;
-	hsv[2] = hsv[2] / 100;
-
 	var new_rgb = hsv2rgb(hsv);
+	console.log(new_rgb);
 	// r,g,b = 0~255
 	return new_rgb;
 }
@@ -157,7 +165,8 @@ function hsv2rgb (hsv) {
 	} ) ;
 }
 
-function rgb2hsv (rgb) {
+function rgb2hsv(rgb) {
+	console.log(rgb);
 	var r = rgb[0] / 255 ;
 	var g = rgb[1] / 255 ;
 	var b = rgb[2] / 255 ;
@@ -225,7 +234,7 @@ function background2grey(element) {
 		gs = parseInt(gs);  // ここでグレースケールの濃淡の調整
 		bc = "rgb(" + gs + "," + gs + "," + gs + ")";
 		element.style.backgroundColor = bc;
-		console.log(bc);
+		// console.log(bc);
 		return true;
 	}
 }

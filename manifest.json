@@ -5,7 +5,10 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"https://*/*"
+				"https://color-test-jikken.herokuapp.com/*",
+				"https://ja.wikipedia.org/*",
+				"https://*/*",
+				"http://127.0.0.1:5500/*"
 			],
 			"js": [
 				"color-change.js"
