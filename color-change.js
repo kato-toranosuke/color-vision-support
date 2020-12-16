@@ -10,19 +10,16 @@ const sample_colors = [
 	{ name: 'pink', color: { h: 326, s: 1.0, v: 1.0 } },
 ];
 
-
-// この関数が実行される
 function main() {
+
 	var body = document.getElementsByTagName('body')[0];
 
-	// body以下の全ての要素に対してフォントの色を近似する
 	children_color_change(body);
-	// body以下の全ての要素に対して背景色の色を近似する
+	// 全ての要素に対して背景色をグレースケールに変換する
 	children_bc_change(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 }
 
 
-// 各要素に対して関数font_change_colorを適用する
 function children_color_change(element) {
 	let children = element.children;
 
@@ -30,12 +27,11 @@ function children_color_change(element) {
 		if (child.children.length != 0) {
 			children_color_change(child);
 		}
-		font_change_color(child);
+		change_color(child);
 	}
 }
 
-// 要素elementのフォントの色を近似し変更する
-async function font_change_color(element) {
+async function change_color(element) {
 	//console.log(element);
 
 	let css = getComputedStyle(element, null);
@@ -47,7 +43,7 @@ async function font_change_color(element) {
 	let result2;
 	if (result === null) {
 		result2 = ['255', '255', '255'];
-		// console.log(element);
+		console.log(element);
 	} else {
 		result2 = result[0].split(',');
 	}
@@ -66,8 +62,6 @@ async function font_change_color(element) {
 	return;
 }
 
-// arg: rgbを表す数値の配列
-// res: sample_colorsに近似したrgbを表す数値の配列
 function classify_colors(rgb) {
 	// console.log(rgb);
 	var hsv = rgb2hsv(rgb);
@@ -76,57 +70,59 @@ function classify_colors(rgb) {
 	var sat = hsv[1];
 	var bri = hsv[2];
 
-	// 有彩色の場合
-	if (sat > 0.3 && bri > 0.3) {
-		// console.log("有彩色");
+	let max_rgb = Math.max(...rgb);
+	let min_rgb = Math.min(...rgb);
+	if (max_rgb - min_rgb < 30) {
+		// 有彩色
+		console.log("有彩色");
 
-		if(hue < 34){
+		if (hue < 34) {
 			// red
 			hsv[0] = sample_colors[0].color.h;
 			hsv[1] = sample_colors[0].color.s;
 			hsv[2] = sample_colors[0].color.v;
-		}else if(hue < 48){
+		} else if (hue < 48) {
 			// orange
 			hsv[0] = sample_colors[1].color.h;
 			hsv[1] = sample_colors[1].color.s;
 			hsv[2] = sample_colors[1].color.v;
-		}else if(hue < 110){
+		} else if (hue < 110) {
 			// yellow
 			hsv[0] = sample_colors[2].color.h;
 			hsv[1] = sample_colors[2].color.s;
 			hsv[2] = sample_colors[2].color.v;
-		}else if(hue < 182){
+		} else if (hue < 182) {
 			// green
 			hsv[0] = sample_colors[3].color.h;
 			hsv[1] = sample_colors[3].color.s;
 			hsv[2] = sample_colors[3].color.v;
-		}else if(hue < 215){
+		} else if (hue < 215) {
 			// skyblue
 			hsv[0] = sample_colors[4].color.h;
 			hsv[1] = sample_colors[4].color.s;
 			hsv[2] = sample_colors[4].color.v;
-		}else if(hue < 278){
+		} else if (hue < 278) {
 			// blue
 			hsv[0] = sample_colors[5].color.h;
 			hsv[1] = sample_colors[5].color.s;
 			hsv[2] = sample_colors[5].color.v;
-		}else{
+		} else {
 			// pink
 			hsv[0] = sample_colors[6].color.h;
 			hsv[1] = sample_colors[6].color.s;
 			hsv[2] = sample_colors[6].color.v;
 		}
 	} else {
-		// console.log("無彩色");
+		// 無彩色
+		console.log("無彩色");
 	}
 
 	var new_rgb = hsv2rgb(hsv);
-	// console.log(new_rgb);
+	console.log(new_rgb);
 	// r,g,b = 0~255
 	return new_rgb;
 }
 
-// hsvからrgbへの変換
 function hsv2rgb (hsv) {
 	var h = hsv[0] / 60 ;
 	var s = hsv[1] ;
@@ -172,9 +168,8 @@ function hsv2rgb (hsv) {
 	} ) ;
 }
 
-// rgbからhsvへの変換
 function rgb2hsv(rgb) {
-	// console.log(rgb);
+	console.log(rgb);
 	var r = rgb[0] / 255 ;
 	var g = rgb[1] / 255 ;
 	var b = rgb[2] / 255 ;
@@ -210,14 +205,13 @@ function rgb2hsv(rgb) {
 }
 
 
-
-// 各要素に対して関数bc_change_colorを適用する
+// 各要素に対してbackground2greyを適用する
 // 背景色が未設定の場合は親の要素の設定に従う
 function children_bc_change(element, bc) {
 	let children = element.children;
 
 	for(let child of children) {
-		if( !bc_change_color(child) ) {
+		if( !background2grey(child) ) {
 			child.style.backgroundColor = bc;
 		}
 		if (child.children.length != 0) {
@@ -226,9 +220,8 @@ function children_bc_change(element, bc) {
 	}
 }
 
-// 背景色をユニバーサル色に近似する。
-// res: true = 背景色が設定されている, false = 設定されていない
-function bc_change_color(element) {
+// 背景色が設定されていればグレースケールに変換する
+function background2grey(element) {
 	// console.log(element);
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
 	// console.log(bc);
@@ -240,10 +233,11 @@ function bc_change_color(element) {
 		return false;
 	}
 	else {
-		let new_rgb = classify_colors(rgb);
-		let new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
-		element.style.backgroundColor = new_rgb_str;
-		// console.log(new_rgb_str);
+		let gs = (rgb[0]+rgb[1]+rgb[2]) / 3;
+		gs = parseInt(gs);  // ここでグレースケールの濃淡の調整
+		bc = "rgb(" + gs + "," + gs + "," + gs + ")";
+		element.style.backgroundColor = bc;
+		// console.log(bc);
 		return true;
 	}
 }
