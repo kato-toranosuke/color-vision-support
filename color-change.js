@@ -43,7 +43,7 @@ async function change_color(element) {
 	let result2;
 	if (result === null) {
 		result2 = ['255', '255', '255'];
-		console.log(element);
+		// console.log(element);
 	} else {
 		result2 = result[0].split(',');
 	}
@@ -72,7 +72,7 @@ function classify_colors(rgb) {
 
 	// 有彩色の場合
 	if (sat > 0.3 && bri > 0.3) {
-		console.log("有彩色");
+		// console.log("有彩色");
 
 		if(hue < 34){
 			// red
@@ -111,11 +111,11 @@ function classify_colors(rgb) {
 			hsv[2] = sample_colors[6].color.v;
 		}
 	} else {
-		console.log("無彩色");
+		// console.log("無彩色");
 	}
 
 	var new_rgb = hsv2rgb(hsv);
-	console.log(new_rgb);
+	// console.log(new_rgb);
 	// r,g,b = 0~255
 	return new_rgb;
 }
@@ -166,7 +166,7 @@ function hsv2rgb (hsv) {
 }
 
 function rgb2hsv(rgb) {
-	console.log(rgb);
+	// console.log(rgb);
 	var r = rgb[0] / 255 ;
 	var g = rgb[1] / 255 ;
 	var b = rgb[2] / 255 ;
@@ -208,7 +208,7 @@ function children_bc_change(element, bc) {
 	let children = element.children;
 
 	for(let child of children) {
-		if( !background2grey(child) ) {
+		if( !bc_change_color(child) ) {
 			child.style.backgroundColor = bc;
 		}
 		if (child.children.length != 0) {
@@ -217,8 +217,9 @@ function children_bc_change(element, bc) {
 	}
 }
 
-// 背景色が設定されていればグレースケールに変換する
-function background2grey(element) {
+// 背景色をユニバーサル色に近似する。
+// res: true = 背景色が設定されている, false = 設定されていない
+function bc_change_color(element) {
 	// console.log(element);
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
 	// console.log(bc);
@@ -230,11 +231,10 @@ function background2grey(element) {
 		return false;
 	}
 	else {
-		let gs = (rgb[0]+rgb[1]+rgb[2]) / 3;
-		gs = parseInt(gs);  // ここでグレースケールの濃淡の調整
-		bc = "rgb(" + gs + "," + gs + "," + gs + ")";
-		element.style.backgroundColor = bc;
-		// console.log(bc);
+		let new_rgb = classify_colors(rgb);
+		let new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
+		element.style.backgroundColor = new_rgb_str;
+		// console.log(new_rgb_str);
 		return true;
 	}
 }
