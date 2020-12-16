@@ -77,10 +77,10 @@ function classify_colors(rgb) {
 	var bri = hsv[2];
 
 	// 有彩色の場合
-	if (sat > 0.3 && bri > 0.3) {
+	if ( Math.max(rgb)-Math.min(rgb) > 30 ) {
 		// console.log("有彩色");
 
-		if(hue < 34){
+		if(hue < 27 || hue > 356){
 			// red
 			hsv[0] = sample_colors[0].color.h;
 			hsv[1] = sample_colors[0].color.s;
@@ -90,12 +90,12 @@ function classify_colors(rgb) {
 			hsv[0] = sample_colors[1].color.h;
 			hsv[1] = sample_colors[1].color.s;
 			hsv[2] = sample_colors[1].color.v;
-		}else if(hue < 110){
+		}else if(hue < 90){  // rgb 1:2:0
 			// yellow
 			hsv[0] = sample_colors[2].color.h;
 			hsv[1] = sample_colors[2].color.s;
 			hsv[2] = sample_colors[2].color.v;
-		}else if(hue < 182){
+		}else if(hue < 180){  // rgb 0:1:1
 			// green
 			hsv[0] = sample_colors[3].color.h;
 			hsv[1] = sample_colors[3].color.s;
@@ -105,7 +105,7 @@ function classify_colors(rgb) {
 			hsv[0] = sample_colors[4].color.h;
 			hsv[1] = sample_colors[4].color.s;
 			hsv[2] = sample_colors[4].color.v;
-		}else if(hue < 278){
+		}else if(hue < 270){  // rgb 1:0:2
 			// blue
 			hsv[0] = sample_colors[5].color.h;
 			hsv[1] = sample_colors[5].color.s;
