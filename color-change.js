@@ -10,6 +10,10 @@ const sample_colors = [
 	{ name: 'pink', color: { h: 326, s: 1.0, v: 1.0 } },
 ];
 
+// 正規表現
+const reg4rgb = /(?<=rgb\().*(?=\))/;
+const reg4rgba = /(?<=rgba\().*(?=\))/;
+
 
 // この関数が実行される
 function main() {
@@ -42,14 +46,18 @@ async function font_change_color(element) {
 	let rgb_color = css.getPropertyValue("color");
 	//console.log(rgb_color);
 
-	let reg = /(?<=rgb\().*(?=\))/;
-	let result = rgb_color.match(reg);
+	// let reg = /(?<=rgb\().*(?=\))/;
+	let result_rgb = rgb_color.match(reg4rgb);
+	let result_rgba = rgb_color.match(reg4rgba);
 	let result2;
-	if (result === null) {
+	if (result_rgb === null && result_rgba === null) {
 		result2 = ['255', '255', '255'];
+		// result2 = ['0', '0', '0'];
 		// console.log(element);
+	} else if (result_rgb !== null){
+		result2 = result_rgb[0].split(',');
 	} else {
-		result2 = result[0].split(',');
+		result2 = result_rgba[0].split(',');
 	}
 
 	let rgb = [];
