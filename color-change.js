@@ -77,10 +77,10 @@ function classify_colors(rgb) {
 	var bri = hsv[2];
 
 	// 有彩色の場合
-	if ( Math.max(rgb)-Math.min(rgb) > 30 ) {
+	if ( Math.max(...rgb)-Math.min(...rgb) > 30 ) {
 		// console.log("有彩色");
 
-		if(hue < 27 || hue > 356){
+		if(hue < 34 || hue > 356){
 			// red
 			hsv[0] = sample_colors[0].color.h;
 			hsv[1] = sample_colors[0].color.s;
@@ -240,7 +240,7 @@ function bc_change_color(element) {
 		return false;
 	}
 	else {
-		let new_rgb = classify_colors(rgb);
+		let new_rgb = classify_colors(rgb.slice(0,3));
 		let new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
 		element.style.backgroundColor = new_rgb_str;
 		// console.log(new_rgb_str);
