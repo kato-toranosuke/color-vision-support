@@ -10,16 +10,19 @@ const sample_colors = [
 	{ name: 'pink', color: { h: 326, s: 1.0, v: 1.0 } },
 ];
 
-function main() {
 
+// この関数が実行される
+function main() {
 	var body = document.getElementsByTagName('body')[0];
 
+	// body以下の全ての要素に対してフォントの色を近似する
 	children_color_change(body);
-	// 全ての要素に対して背景色をグレースケールに変換する
+	// body以下の全ての要素に対して背景色の色を近似する
 	children_bc_change(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 }
 
 
+// 各要素に対して関数font_change_colorを適用する
 function children_color_change(element) {
 	let children = element.children;
 
@@ -27,11 +30,12 @@ function children_color_change(element) {
 		if (child.children.length != 0) {
 			children_color_change(child);
 		}
-		change_color(child);
+		font_change_color(child);
 	}
 }
 
-async function change_color(element) {
+// 要素elementのフォントの色を近似し変更する
+async function font_change_color(element) {
 	//console.log(element);
 
 	let css = getComputedStyle(element, null);
@@ -62,6 +66,8 @@ async function change_color(element) {
 	return;
 }
 
+// arg: rgbを表す数値の配列
+// res: sample_colorsに近似したrgbを表す数値の配列
 function classify_colors(rgb) {
 	// console.log(rgb);
 	var hsv = rgb2hsv(rgb);
@@ -120,6 +126,7 @@ function classify_colors(rgb) {
 	return new_rgb;
 }
 
+// hsvからrgbへの変換
 function hsv2rgb (hsv) {
 	var h = hsv[0] / 60 ;
 	var s = hsv[1] ;
@@ -165,6 +172,7 @@ function hsv2rgb (hsv) {
 	} ) ;
 }
 
+// rgbからhsvへの変換
 function rgb2hsv(rgb) {
 	// console.log(rgb);
 	var r = rgb[0] / 255 ;
@@ -202,7 +210,8 @@ function rgb2hsv(rgb) {
 }
 
 
-// 各要素に対してbackground2greyを適用する
+
+// 各要素に対して関数bc_change_colorを適用する
 // 背景色が未設定の場合は親の要素の設定に従う
 function children_bc_change(element, bc) {
 	let children = element.children;
