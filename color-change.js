@@ -19,10 +19,10 @@ const reg4rgba = /(?<=rgba\().*(?=\))/;
 function main() {
 	var body = document.getElementsByTagName('body')[0];
 
-	// body以下の全ての要素に対してフォントの色を近似する
-	children_color_change(body);
 	// body以下の全ての要素に対して背景色の色を近似する
 	children_bc_change(body, getComputedStyle(body, null).getPropertyValue("background-color"));
+	// body以下の全ての要素に対してフォントの色を近似する
+	children_color_change(body);
 }
 
 
@@ -40,7 +40,8 @@ function children_color_change(element) {
 
 // 要素elementのフォントの色を近似し変更する
 async function font_change_color(element) {
-	//console.log(element);
+	// console.log(element);
+	// console.log(element.style.backgroundColor);
 
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
@@ -66,6 +67,9 @@ async function font_change_color(element) {
 	rgb[2] = Number(result2[2]);
 
 	var new_rgb = classify_colors(rgb);
+
+	// 背景色とフォントの色の組合せを考える
+	new_rgb = conbination(new_rgb, element.style.backgroundColor);
 
 	//return rgb;
 	const new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
@@ -215,6 +219,10 @@ function rgb2hsv(rgb) {
 	var v = max ;
 
 	return [ h, s, v ] ;
+}
+
+function conbination(fc, bc) {
+
 }
 
 
