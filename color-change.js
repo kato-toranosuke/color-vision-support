@@ -221,8 +221,61 @@ function rgb2hsv(rgb) {
 	return [ h, s, v ] ;
 }
 
-function conbination(fc, bc) {
 
+// arg:  fc:フォントの色  bc:背景色
+function conbination(fc, bc) {
+	//NG: 暖色・寒色同士、明度が近い
+	if(bc == black) {
+		black -> white
+		if
+		blue -> water
+	} else if(bc == orange) { // black, yellow, blue, white
+		orenge -> yellow
+		water -> blue
+		green -> black
+		red -> black
+		purple -> black
+	} else if(bc == water) { // black, yellow, red, purple, white
+		orange -> red
+		water -> white
+		green -> black
+		blue -> white
+	} else if(bc == green) { // black, orange, yellow, white
+		water -> white
+		green -> white
+		blue -> black
+		red -> orange
+		purple -> orenge
+	} else if(bc == yellow) {
+		orange -> red
+		yellow -> green
+		white -> black
+	} else if(bc == blue) { // orange, yellow, purple, white
+		water -> white
+		green -> yellow
+		blue -> white
+		red -> purple
+		black -> white
+	} else if(bc == red) { // black, water, white
+		orange -> black
+		green -> water
+		yellow -> black
+		blue -> water
+		red -> black
+		purple -> black
+	} else if(bc == purple) { // black, yellow, blue, white
+		orange -> yellow
+		water -> blue
+		green -> black
+		red -> yellow
+		purple -> yellow
+	} else { //
+		water -> blue
+		yellow -> orange
+		white -> black
+	}
+
+	return fc;
 }
 
 
