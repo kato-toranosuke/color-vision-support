@@ -59,10 +59,15 @@ async function font_change_color(element) {
 		result2 = result_rgba[0].split(',');
 	}
 
-	let rgb = [];
-	rgb[0] = Number(result2[0]);
-	rgb[1] = Number(result2[1]);
-	rgb[2] = Number(result2[2]);
+	let rgba = [];
+	rgba[0] = Number(result2[0]);
+	rgba[1] = Number(result2[1]);
+	rgba[2] = Number(result2[2]);
+	if (result2.length == 4) {
+		rgba[3] = Number(result2[3]);
+	} else {
+		rgba[3] = -1;
+	}
 
 	// rgbの値によってsample_colorsに近似する
 	var new_rgb = classify_colors(rgb);
@@ -96,9 +101,9 @@ function classify_colors(rgb) {
 		}
 		new_rgb = [sample_colors[min_index].rgb.r, sample_colors[min_index].rgb.g, sample_colors[min_index].rgb.b];
 	} else {
-		new_rgb = rgb;
+		new_rgba = rgba;
 	}
-
+  
 	// console.log(new_rgb);
 	return new_rgb;
 }
