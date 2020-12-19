@@ -1,15 +1,5 @@
 // 色を近似する
-// h: 0~360, s: 0~100, v:0~100
 const sample_colors = [
-	{ name: 'red', color: { h: 26, s: 1.0, v: 0.84 } },
-	{ name: 'orange', color: { h: 41, s: 1.0, v: 0.90 } },
-	{ name: 'yellow', color: { h: 56, s: 0.73, v: 0.94 } },
-	{ name: 'green', color: { h: 164, s: 1.0, v: 0.62 } },
-	{ name: 'skyblue', color: { h: 202, s: 0.63, v: 0.91 } },
-	{ name: 'blue', color: { h: 202, s: 1.0, v: 0.70 } },
-	{ name: 'pink', color: { h: 327, s: 0.41, v: 0.80 } },
-];
-const sample_colors_2 = [
 	{ name: 'red', hsv: { h: 26, s: 1.0, v: 0.84 }, rgb: { r: 213, g: 94, b: 0 } },
 	{ name: 'orange', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 230, g: 159, b: 0 } },
 	{ name: 'yellow', hsv: { h: 56, s: 0.73, v: 0.94 }, rgb: { r: 240, g: 228, b: 66 } },
@@ -53,21 +43,16 @@ function children_color_change(element) {
 
 // 要素elementのフォントの色を近似し変更する
 async function font_change_color(element) {
-	console.log(element);
-	// console.log(element.style.backgroundColor);
+	// console.log(element);
 
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
-	//console.log(rgb_color);
 
-	// let reg = /(?<=rgb\().*(?=\))/;
 	let result_rgb = rgb_color.match(reg4rgb);
 	let result_rgba = rgb_color.match(reg4rgba);
 	let result2;
 	if (result_rgb === null && result_rgba === null) {
 		result2 = ['255', '255', '255'];
-		// result2 = ['0', '0', '0'];
-		// console.log(element);
 	} else if (result_rgb !== null) {
 		result2 = result_rgb[0].split(',');
 	} else {
@@ -79,193 +64,52 @@ async function font_change_color(element) {
 	rgb[1] = Number(result2[1]);
 	rgb[2] = Number(result2[2]);
 
-	// var new_rgb = classify_colors(rgb);
-	var new_rgb = classify_colors_2(rgb);
+	// rgbの値によってsample_colorsに近似する
+	var new_rgb = classify_colors(rgb);
+	// console.log(`before=${rgb}, after=${new_rgb}`);
 
 	// 背景色とフォントの色の組合せを考える
 	let bc = element.style.backgroundColor;
 	new_rgb = conbination(new_rgb, bc2rgb(bc).slice(0,3));
+	// console.log(new_rgb);
 
-	//return rgb;
 	const new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
 	element.style.color = new_rgb_str;
 
 	return;
 }
 
-function classify_colors_2(rgb) {
+// arg: rgbを表す数値の配列
+// res: sample_colorsに近似したrgbを表す数値の配列
+function classify_colors(rgb) {
 	let new_rgb;
 	if (Math.max(...rgb) - Math.min(...rgb) > 30) {
 		// 有彩色の場合
 		let min_index = 0, min_dist = 1000000;
-		for (let i = 0; i < sample_colors_2.length; i++) {
-			const sample_rgb = sample_colors_2[i].rgb;
+		for (let i = 0; i < sample_colors.length; i++) {
+			const sample_rgb = sample_colors[i].rgb;
 			let dist = Math.abs(rgb[0] - sample_rgb.r) + Math.abs(rgb[1] - sample_rgb.g) + Math.abs(rgb[2] - sample_rgb.b);
 			if (dist < min_dist) {
 				min_index = i;
 				min_dist = dist;
 			}
 		}
-		new_rgb = [sample_colors_2[min_index].rgb.r, sample_colors_2[min_index].rgb.g, sample_colors_2[min_index].rgb.b];
+		new_rgb = [sample_colors[min_index].rgb.r, sample_colors[min_index].rgb.g, sample_colors[min_index].rgb.b];
 	} else {
 		new_rgb = rgb;
 	}
 
-
 	// console.log(new_rgb);
 	return new_rgb;
-}
-
-// arg: rgbを表す数値の配列
-// res: sample_colorsに近似したrgbを表す数値の配列
-function classify_colors(rgb) {
-	// console.log(rgb);
-	var hsv = rgb2hsv(rgb);
-	// h = 0~360, s,v=0~1
-	var hue = hsv[0];
-	var sat = hsv[1];
-	var bri = hsv[2];
-
-	// 有彩色の場合
-	if (Math.max(...rgb) - Math.min(...rgb) > 30) {
-		// console.log("有彩色");
-
-		if (hue < 34 || hue > 356) {
-			// red
-			hsv[0] = sample_colors[0].color.h;
-			hsv[1] = sample_colors[0].color.s;
-			hsv[2] = sample_colors[0].color.v;
-		} else if (hue < 48) {
-			// orange
-			hsv[0] = sample_colors[1].color.h;
-			hsv[1] = sample_colors[1].color.s;
-			hsv[2] = sample_colors[1].color.v;
-		} else if (hue < 90) {  // rgb 1:2:0
-			// yellow
-			hsv[0] = sample_colors[2].color.h;
-			hsv[1] = sample_colors[2].color.s;
-			hsv[2] = sample_colors[2].color.v;
-		} else if (hue < 180) {  // rgb 0:1:1
-			// green
-			hsv[0] = sample_colors[3].color.h;
-			hsv[1] = sample_colors[3].color.s;
-			hsv[2] = sample_colors[3].color.v;
-		} else if (hue < 215) {
-			// skyblue
-			hsv[0] = sample_colors[4].color.h;
-			hsv[1] = sample_colors[4].color.s;
-			hsv[2] = sample_colors[4].color.v;
-		} else if (hue < 270) {  // rgb 1:0:2
-			// blue
-			hsv[0] = sample_colors[5].color.h;
-			hsv[1] = sample_colors[5].color.s;
-			hsv[2] = sample_colors[5].color.v;
-		} else {
-			// pink
-			hsv[0] = sample_colors[6].color.h;
-			hsv[1] = sample_colors[6].color.s;
-			hsv[2] = sample_colors[6].color.v;
-		}
-	} else {
-		// console.log("無彩色");
-	}
-
-	var new_rgb = hsv2rgb(hsv);
-	// console.log(new_rgb);
-	// r,g,b = 0~255
-	return new_rgb;
-}
-
-// hsvからrgbへの変換
-function hsv2rgb(hsv) {
-	var h = hsv[0] / 60;
-	var s = hsv[1];
-	var v = hsv[2];
-	if (s == 0) return [v * 255, v * 255, v * 255];
-
-	var rgb;
-	var i = parseInt(h);
-	var f = h - i;
-	var v1 = v * (1 - s);
-	var v2 = v * (1 - s * f);
-	var v3 = v * (1 - s * (1 - f));
-
-	switch (i) {
-		case 0:
-		case 6:
-			rgb = [v, v3, v1];
-			break;
-
-		case 1:
-			rgb = [v2, v, v1];
-			break;
-
-		case 2:
-			rgb = [v1, v, v3];
-			break;
-
-		case 3:
-			rgb = [v1, v2, v];
-			break;
-
-		case 4:
-			rgb = [v3, v1, v];
-			break;
-
-		case 5:
-			rgb = [v, v1, v2];
-			break;
-	}
-
-	return rgb.map(function (value) {
-		return value * 255;
-	});
-}
-
-// rgbからhsvへの変換
-function rgb2hsv(rgb) {
-	// console.log(rgb);
-	var r = rgb[0] / 255;
-	var g = rgb[1] / 255;
-	var b = rgb[2] / 255;
-
-	var max = Math.max(r, g, b);
-	var min = Math.min(r, g, b);
-	var diff = max - min;
-
-	var h = 0;
-
-	switch (min) {
-		case max:
-			h = 0;
-			break;
-
-		case r:
-			h = (60 * ((b - g) / diff)) + 180;
-			break;
-
-		case g:
-			h = (60 * ((r - b) / diff)) + 300;
-			break;
-
-		case b:
-			h = (60 * ((g - r) / diff)) + 60;
-			break;
-	}
-
-	var s = max == 0 ? 0 : diff / max;
-	var v = max;
-
-	return [h, s, v];
 }
 
 
 // arg:  fc:フォントの色  bc:背景色
+// 参考資料、実験により、背景色に対して認識しやすいフォントの色に変換する
+//NG: 暖色・寒色同士、明度が近い
 function conbination(fc, bc) {
-	console.log("fc="+fc);
-	console.log("bc="+bc);
-	//NG: 暖色・寒色同士、明度が近い
-	if(isMatch(bc, black)) {
+	// console.log(`fc=${fc}, bc=${bc}`);
+	if(isMatch(bc, black)) { // orange, skyblue, green, yellow, red, purple, white
 		if(isMatch(fc, black)) {
 			fc = white;
 		} else if(isMatch(fc, blue)) {
@@ -305,7 +149,7 @@ function conbination(fc, bc) {
 		} else if(isMatch(fc, purple)) {
 			fc = orange;
 		}
-	} else if(isMatch(bc, yellow)) {
+	} else if(isMatch(bc, yellow)) { // black, skyblue, green, blue, red, purple
 		if(isMatch(fc, orange)) {
 			fc = red;
 		} else if(isMatch(fc, yellow)) {
@@ -351,7 +195,7 @@ function conbination(fc, bc) {
 		} else if(isMatch(fc, purple)) {
 			fc = yellow;
 		}
-	} else if(isMatch(bc, white)) {
+	} else if(isMatch(bc, white)) { // black, orange, green, blue, red, purple
 		if(isMatch(fc, skyblue)) {
 			fc = blue;
 		} else if(isMatch(fc, yellow)) {
@@ -364,14 +208,18 @@ function conbination(fc, bc) {
 	return fc;
 }
 
+// rgb1とrgb2の数値の配列が一致しているか
 function isMatch(rgb1, rgb2) {
 	return rgb1.toString() == rgb2.toString();
 }
 
 
+// arg:  element: DOM要素, bc: 親の要素の背景色
 // 各要素に対して関数bc_change_colorを適用する
 // 背景色が未設定の場合は親の要素の設定に従う
 function children_bc_change(element, bc) {
+	// bodyの背景色が未設定のときに白色に変換する
+	if( bc.toString() == "rgba(0, 0, 0, 0)" ) { bc = "rgb(255, 255, 255)"; }
 	let children = element.children;
 
 	for (let child of children) {
@@ -387,22 +235,17 @@ function children_bc_change(element, bc) {
 // 背景色をユニバーサル色に近似する。
 // res: true = 背景色が設定されている, false = 設定されていない
 function bc_change_color(element) {
-	// console.log(element);
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
-	// console.log(bc);
 	let rgb = bc2rgb(bc);
-	// console.log("rgb: "+rgb)
 
 	// 背景色が未設定かどうか
 	if (rgb[0] + rgb[1] + rgb[2] + rgb[3] == 0) {
 		return false;
 	}
 	else {
-		// let new_rgb = classify_colors(rgb.slice(0, 3));
-		let new_rgb = classify_colors_2(rgb.slice(0, 3));
+		let new_rgb = classify_colors(rgb.slice(0, 3));
 		let new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
 		element.style.backgroundColor = new_rgb_str;
-		// console.log(new_rgb_str);
 		return true;
 	}
 }
