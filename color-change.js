@@ -70,24 +70,34 @@ async function font_change_color(element) {
 	}
 
 	// rgbの値によってsample_colorsに近似する
-	var new_rgb = classify_colors(rgb);
+	var new_rgba = classify_colors(rgba);
 	// console.log(`before=${rgb}, after=${new_rgb}`);
 
-	// 背景色とフォントの色の組合せを考える
+    // 背景色とフォントの色の組合せを考える
 	let bc = element.style.backgroundColor;
-	new_rgb = conbination(new_rgb, bc2rgb(bc).slice(0,3));
-	// console.log(new_rgb);
+	let conb = conbination(new_rgba.slice(0, 3), bc2rgb(bc).slice(0,3));
+	new_rgba = [conb[0], conb[1], conb[2], new_rgba[3]];
+	// console.log(new_rgba);
 
-	const new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
-	element.style.color = new_rgb_str;
+	// 透明度の値に応じて値を設定
+	let new_rgba_str;
+	if (new_rgba[3] == -1) {
+		new_rgba_str = `rgb(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]})`;
+	} else {
+		new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
+	}
+
+	// console.log(new_rgba_str);
+	element.style.color = new_rgba_str;
 
 	return;
 }
 
 // arg: rgbを表す数値の配列
 // res: sample_colorsに近似したrgbを表す数値の配列
-function classify_colors(rgb) {
-	let new_rgb;
+function classify_colors(rgba) {
+	let new_rgba;
+	let rgb = [rgba[0], rgba[1], rgba[2]];
 	if (Math.max(...rgb) - Math.min(...rgb) > 30) {
 		// 有彩色の場合
 		let min_index = 0, min_dist = 1000000;
@@ -99,13 +109,12 @@ function classify_colors(rgb) {
 				min_dist = dist;
 			}
 		}
-		new_rgb = [sample_colors[min_index].rgb.r, sample_colors[min_index].rgb.g, sample_colors[min_index].rgb.b];
+		new_rgba = [sample_colors[min_index].rgb.r, sample_colors[min_index].rgb.g, sample_colors[min_index].rgb.b, rgba[3]];
 	} else {
 		new_rgba = rgba;
 	}
-  
-	// console.log(new_rgb);
-	return new_rgb;
+
+	return new_rgba;
 }
 
 
@@ -248,9 +257,9 @@ function bc_change_color(element) {
 		return false;
 	}
 	else {
-		let new_rgb = classify_colors(rgb.slice(0, 3));
-		let new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
-		element.style.backgroundColor = new_rgb_str;
+		let new_rgba = classify_colors(rgb);
+		let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
+		element.style.backgroundColor = new_rgba_str;
 		return true;
 	}
 }
