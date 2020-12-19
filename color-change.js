@@ -19,6 +19,10 @@ const sample_colors_2 = [
 	{ name: 'pink', hsv: { h: 327, s: 0.41, v: 0.80 }, rgb: { r: 204, g: 121, b: 167 }},
 ];
 
+const black = [0,0,0], orange = [230,159,0], skyblue = [86,180,233];
+const green = [0,158,115], yellow = [240,228,66], blue = [0,114,178];
+const red = [213,94,0], purple = [204,121,167], white = [255,255,255];
+
 // 正規表現
 const reg4rgb = /(?<=rgb\().*(?=\))/;
 const reg4rgba = /(?<=rgba\().*(?=\))/;
@@ -49,7 +53,7 @@ function children_color_change(element) {
 
 // 要素elementのフォントの色を近似し変更する
 async function font_change_color(element) {
-	// console.log(element);
+	console.log(element);
 	// console.log(element.style.backgroundColor);
 
 	let css = getComputedStyle(element, null);
@@ -79,7 +83,8 @@ async function font_change_color(element) {
 	var new_rgb = classify_colors_2(rgb);
 
 	// 背景色とフォントの色の組合せを考える
-	new_rgb = conbination(new_rgb, element.style.backgroundColor);
+	let bc = element.style.backgroundColor;
+	new_rgb = conbination(new_rgb, bc2rgb(bc).slice(0,3));
 
 	//return rgb;
 	const new_rgb_str = `rgb(${new_rgb[0]}, ${new_rgb[1]}, ${new_rgb[2]})`;
@@ -107,7 +112,7 @@ function classify_colors_2(rgb) {
 	}
 
 
-	console.log(new_rgb);
+	// console.log(new_rgb);
 	return new_rgb;
 }
 
@@ -257,60 +262,111 @@ function rgb2hsv(rgb) {
 
 // arg:  fc:フォントの色  bc:背景色
 function conbination(fc, bc) {
+	console.log("fc="+fc);
+	console.log("bc="+bc);
 	//NG: 暖色・寒色同士、明度が近い
-	if(bc == black) {
-		black -> white
-		if
-		blue -> water
-	} else if(bc == orange) { // black, yellow, blue, white
-		orenge -> yellow
-		water -> blue
-		green -> black
-		red -> black
-		purple -> black
-	} else if(bc == water) { // black, yellow, red, purple, white
-		orange -> red
-		water -> white
-		green -> black
-		blue -> white
-	} else if(bc == green) { // black, orange, yellow, white
-		water -> white
-		green -> white
-		blue -> black
-		red -> orange
-		purple -> orenge
-	} else if(bc == yellow) {
-		orange -> red
-		yellow -> green
-		white -> black
-	} else if(bc == blue) { // orange, yellow, purple, white
-		water -> white
-		green -> yellow
-		blue -> white
-		red -> purple
-		black -> white
-	} else if(bc == red) { // black, water, white
-		orange -> black
-		green -> water
-		yellow -> black
-		blue -> water
-		red -> black
-		purple -> black
-	} else if(bc == purple) { // black, yellow, blue, white
-		orange -> yellow
-		water -> blue
-		green -> black
-		red -> yellow
-		purple -> yellow
-	} else { //
-		water -> blue
-		yellow -> orange
-		white -> black
+	if(isMatch(bc, black)) {
+		if(isMatch(fc, black)) {
+			fc = white;
+		} else if(isMatch(fc, blue)) {
+			fc = skyblue;
+		}
+	} else if(isMatch(bc, orange)) { // black, yellow, blue, white
+		if(isMatch(fc, orange)) {
+			fc = yellow;
+		}else if(isMatch(fc, skyblue)) {
+			fc = blue;
+		}else if(isMatch(fc, green)) {
+			fc = black;
+		}else if(isMatch(fc, red)) {
+			fc = black;
+		}else if(isMatch(fc, purple)) {
+			fc = black;
+		}
+	} else if(isMatch(bc, skyblue)) { // black, yellow, red, purple, white
+		if(isMatch(fc, orange)) {
+			fc = red;
+		} else if(isMatch(fc, skyblue)) {
+			fc = white;
+		} else if(isMatch(fc, green)) {
+			fc = black;
+		} else if(isMatch(fc, blue)) {
+			fc = white;
+		}
+	} else if(isMatch(bc, green)) { // black, orange, yellow, white
+		if(isMatch(fc, skyblue)) {
+			fc = white;
+		} else if(isMatch(fc, green)) {
+			fc = white;
+		} else if(isMatch(fc, blue)) {
+			fc = black;
+		} else if(isMatch(fc, red)) {
+			fc = orange;
+		} else if(isMatch(fc, purple)) {
+			fc = orange;
+		}
+	} else if(isMatch(bc, yellow)) {
+		if(isMatch(fc, orange)) {
+			fc = red;
+		} else if(isMatch(fc, yellow)) {
+			fc = green;
+		} else if(isMatch(fc, white)) {
+			fc = black;
+		}
+	} else if(isMatch(bc, blue)) { // orange, yellow, purple, white
+		if(isMatch(fc, skyblue)) {
+			fc = white;
+		} else if(isMatch(fc, green)) {
+			fc = yellow;
+		} else if(isMatch(fc, blue)) {
+			fc = white;
+		} else if(isMatch(fc, red)) {
+			fc = purple;
+		} else if(isMatch(fc, black)) {
+			fc = white;
+		}
+	} else if(isMatch(bc, red)) { // black, skyblue, white
+		if(isMatch(fc, orange)) {
+			fc = black;
+		} else if(isMatch(fc, green)) {
+			fc = skyblue;
+		} else if(isMatch(fc, yellow)) {
+			fc = black;
+		} else if(isMatch(fc, blue)) {
+			fc = skyblue;
+		} else if(isMatch(fc, red)) {
+			fc = black;
+		} else if(isMatch(fc, purple)) {
+			fc = black;
+		}
+	} else if(isMatch(bc, purple)) { // black, yellow, blue, white
+		if(isMatch(fc, orange)){
+			fc = yellow;
+		} else if(isMatch(fc, skyblue)){
+			fc = blue;
+		} else if(isMatch(fc, green)) {
+			fc = black;
+		} else if(isMatch(fc, red)) {
+			fc = yellow;
+		} else if(isMatch(fc, purple)) {
+			fc = yellow;
+		}
+	} else if(isMatch(bc, white)) {
+		if(isMatch(fc, skyblue)) {
+			fc = blue;
+		} else if(isMatch(fc, yellow)) {
+			fc = orange;
+		} else if(isMatch(fc, white)) {
+			fc = black;
+		}
 	}
 
 	return fc;
 }
 
+function isMatch(rgb1, rgb2) {
+	return rgb1.toString() == rgb2.toString();
+}
 
 
 // 各要素に対して関数bc_change_colorを適用する
