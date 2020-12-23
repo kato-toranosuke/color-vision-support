@@ -75,7 +75,11 @@ async function font_change_color(element) {
 
     // 背景色とフォントの色の組合せを考える
 	let bc = element.style.backgroundColor;
-	let conb = conbination(new_rgba.slice(0, 3), bc2rgb(bc).slice(0,3));
+	let conb = conbination(new_rgba.slice(0, 3), bc2rgba(bc).slice(0, 3));
+
+	// 背景色と文字色の明度差を考慮する
+
+
 	new_rgba = [conb[0], conb[1], conb[2], new_rgba[3]];
 	// console.log(new_rgba);
 
@@ -250,14 +254,14 @@ function children_bc_change(element, bc) {
 // res: true = 背景色が設定されている, false = 設定されていない
 function bc_change_color(element) {
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
-	let rgb = bc2rgb(bc);
+	let rgba = bc2rgba(bc);
 
 	// 背景色が未設定かどうか
-	if (rgb[0] + rgb[1] + rgb[2] + rgb[3] == 0) {
+	if (rgba[0] + rgba[1] + rgba[2] + rgba[3] == 0) {
 		return false;
 	}
 	else {
-		let new_rgba = classify_colors(rgb);
+		let new_rgba = classify_colors(rgba);
 		let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
 		element.style.backgroundColor = new_rgba_str;
 		return true;
@@ -266,16 +270,17 @@ function bc_change_color(element) {
 
 // 文字列のrgb値から数値の配列に変換する
 // res: [rの値, gの値, bの値, aの値]
-function bc2rgb(bc) {
+function bc2rgba(bc) {
 	let start = bc.indexOf('(');
 	let end = bc.indexOf(')');
 	let str = bc.substr(start + 1, end - start - 1).split(',');
-	let rgb = [1, 1, 1, 1];
+	let rgba = [1, 1, 1, 1];
 	let i = 0;
 	for (let val of str) {
-		rgb[i++] = Number(val);
+		rgba[i++] = Number(val);
 	}
-	return rgb;
+	console.log(rgba);
+	return rgba;
 }
 
 main();
