@@ -62,7 +62,6 @@ function children_color_change(element) {
 
 // 要素elementのフォントの色を近似し変更する
 async function font_change_color(element) {
-	// console.log(element);
 
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
@@ -90,23 +89,24 @@ async function font_change_color(element) {
 
 	// rgbの値によってsample_colorsに近似する
 	var new_rgba = classify_colors(rgba, accent_colors);
-	// console.log(`before=${rgb}, after=${new_rgb}`);
 
 	// 背景色とフォントの色の組合せを考える
 	let bc = element.style.backgroundColor;
-	let conb = conbination(new_rgba.slice(0, 3), bc2rgba(bc).slice(0, 3));
+	let bc_rgba = bc2rgba(bc);
+	let conb = conbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
 
 	// 背景色と文字色の明度差を考慮する
 	// rgb -> hsv 変換
-	let bc_hsv = rgb2hsv(bc);
+	let bc_hsv = rgb2hsv(bc_rgba);
 	let conb_hsv = rgb2hsv(conb);
-	// 明度差を判定
-	if (bc) {
 
+	// 明度差を判定
+	if (Math.abs(bc_hsv[2] - conb_hsv[2]) < 0.2) {
+		conb_hsv[2] = Math.abs(1.0 - conb_hsv[2])
+		conb = hsv2rgb(conb_hsv);
 	}
 
 	new_rgba = [conb[0], conb[1], conb[2], new_rgba[3]];
-	// console.log(new_rgba);
 
 	// 透明度の値に応じて値を設定
 	let new_rgba_str;
@@ -116,7 +116,6 @@ async function font_change_color(element) {
 		new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
 	}
 
-	// console.log(new_rgba_str);
 	element.style.color = new_rgba_str;
 
 	return;
@@ -129,21 +128,26 @@ function classify_colors(rgba, sample_colors) {
 	let rgb = [rgba[0], rgba[1], rgba[2]];
 	if (Math.max(...rgb) - Math.min(...rgb) > 30) {
 		// 有彩色の場合
-		let min_index = 0, min_dist = 1000000;
-		for (let i = 0; i < sample_colors.length; i++) {
-			const sample_rgb = sample_colors[i].rgb;
-			let dist = Math.abs(rgb[0] - sample_rgb.r) + Math.abs(rgb[1] - sample_rgb.g) + Math.abs(rgb[2] - sample_rgb.b);
-			if (dist < min_dist) {
-				min_index = i;
-				min_dist = dist;
-			}
-		}
-		new_rgba = [sample_colors[min_index].rgb.r, sample_colors[min_index].rgb.g, sample_colors[min_index].rgb.b, rgba[3]];
+		new_rgba = calc_approximate_color(rgba, sample_colors);
 	} else {
-		new_rgba = rgba;
+		// 無彩色の場合
+		new_rgba = calc_approximate_color(rgba, non_colors);
 	}
 
 	return new_rgba;
+}
+
+function calc_approximate_color(rgba, sample_colors) {
+	let min_index = 0, min_dist = 1000000;
+	for (let i = 0; i < sample_colors.length; i++) {
+		const sample_rgb = sample_colors[i].rgb;
+		let dist = Math.abs(rgba[0] - sample_rgb.r) + Math.abs(rgba[1] - sample_rgb.g) + Math.abs(rgba[2] - sample_rgb.b);
+		if (dist < min_dist) {
+			min_index = i;
+			min_dist = dist;
+		}
+	}
+	return [sample_colors[min_index].rgb.r, sample_colors[min_index].rgb.g, sample_colors[min_index].rgb.b, rgba[3]];
 }
 
 
@@ -265,7 +269,7 @@ function bc_change_color(element) {
 // 文字列のrgb値から数値の配列に変換する
 // res: [rの値, gの値, bの値, aの値]
 function bc2rgba(bc) {
-	console.log(bc);
+	// console.log(bc);
 	let start = bc.indexOf('(');
 	let end = bc.indexOf(')');
 	let str = bc.substr(start + 1, end - start - 1).split(',');
@@ -274,7 +278,6 @@ function bc2rgba(bc) {
 	for (let val of str) {
 		rgba[i++] = Number(val);
 	}
-	console.log(rgba);
 	return rgba;
 }
 
@@ -324,9 +327,9 @@ function hsv2rgb(hsv) {
 }
 
 function rgb2hsv(rgb) {
-	var r = rgb[0] / 255;
-	var g = rgb[1] / 255;
-	var b = rgb[2] / 255;
+	var r = Number(rgb[0]) / 255;
+	var g = Number(rgb[1]) / 255;
+	var b = Number(rgb[2]) / 255;
 
 	var max = Math.max(r, g, b);
 	var min = Math.min(r, g, b);
@@ -355,7 +358,7 @@ function rgb2hsv(rgb) {
 	var s = max == 0 ? 0 : diff / max;
 	var v = max;
 
-	console.log(v);
+	// console.log(v);
 
 	return [h, s, v];
 }
