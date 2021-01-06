@@ -8,7 +8,7 @@ const accent_colors = [
 	{ name: 'pink', hsv: { h: 327, s: 0.41, v: 0.80 }, rgb: { r: 255, g: 128, b: 130 } },
 	{ name: 'orange', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 246, g: 170, b: 0 } },
 	{ name: 'purple', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 153, g: 0, b: 153 } },
-	{ name: 'brown', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 128, g: 64, b: 0 } },
+	{ name: 'brown', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 128, g: 64, b: 0 } }
 ];
 
 const base_colors = [
@@ -19,6 +19,13 @@ const base_colors = [
 	{ name: 'beige', rgb: { r: 255, g: 202, b: 128 } },
 	{ name: 'light_green', rgb: { r: 119, g: 217, b: 168 } },
 	{ name: 'light_purple', rgb: { r: 201, g: 172, b: 230 } }
+];
+
+const non_colors = [
+	{ name: 'white', rgb: { r: 255, g: 255, b: 255 } },
+	{ name: 'light_gray', rgb: { r: 200, g: 200, b: 203 } },
+	{ name: 'gray', rgb: { r: 132, g: 145, b: 158 } },
+	{ name: 'black', rgb: { r: 0, g: 0, b: 0 } }
 ];
 
 const black = [0, 0, 0], orange = [230, 159, 0], skyblue = [86, 180, 233];
