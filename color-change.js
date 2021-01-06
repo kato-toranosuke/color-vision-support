@@ -21,8 +21,6 @@ const base_colors = [
 	{ name: 'light_purple', rgb: { r: 201, g: 172, b: 230 } }
 ];
 
-const
-
 const black = [0, 0, 0], orange = [230, 159, 0], skyblue = [86, 180, 233];
 const green = [0, 158, 115], yellow = [240, 228, 66], blue = [0, 114, 178];
 const red = [213, 94, 0], purple = [204, 121, 167], white = [255, 255, 255];
