@@ -1,12 +1,14 @@
 // 色を近似する
 const accent_colors = [
-	{ name: 'red', hsv: { h: 26, s: 1.0, v: 0.84 }, rgb: { r: 213, g: 94, b: 0 } },
-	{ name: 'orange', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 230, g: 159, b: 0 } },
-	{ name: 'yellow', hsv: { h: 56, s: 0.73, v: 0.94 }, rgb: { r: 240, g: 228, b: 66 } },
-	{ name: 'green', hsv: { h: 164, s: 1.0, v: 0.62 }, rgb: { r: 0, g: 158, b: 115 } },
-	{ name: 'skyblue', hsv: { h: 202, s: 0.63, v: 0.91 }, rgb: { r: 86, g: 180, b: 233 } },
-	{ name: 'blue', hsv: { h: 202, s: 1.0, v: 0.70 }, rgb: { r: 0, g: 114, b: 178 } },
-	{ name: 'pink', hsv: { h: 327, s: 0.41, v: 0.80 }, rgb: { r: 204, g: 121, b: 167 } },
+	{ name: 'red', hsv: { h: 26, s: 1.0, v: 0.84 }, rgb: { r: 255, g: 75, b: 0 } },
+	{ name: 'yellow', hsv: { h: 56, s: 0.73, v: 0.94 }, rgb: { r: 255, g: 241, b: 0 } },
+	{ name: 'green', hsv: { h: 164, s: 1.0, v: 0.62 }, rgb: { r: 3, g: 175, b: 122 } },
+	{ name: 'blue', hsv: { h: 202, s: 1.0, v: 0.70 }, rgb: { r: 0, g: 90, b: 255 } },
+	{ name: 'skyblue', hsv: { h: 202, s: 0.63, v: 0.91 }, rgb: { r: 77, g: 196, b: 255 } },
+	{ name: 'pink', hsv: { h: 327, s: 0.41, v: 0.80 }, rgb: { r: 255, g: 128, b: 130 } },
+	{ name: 'orange', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 246, g: 170, b: 0 } },
+	{ name: 'purple', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 153, g: 0, b: 153 } },
+	{ name: 'brown', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 128, g: 64, b: 0 } },
 ];
 
 const base_colors = [
@@ -18,6 +20,8 @@ const base_colors = [
 	{ name: 'light_green', rgb: { r: 119, g: 217, b: 168 } },
 	{ name: 'light_purple', rgb: { r: 201, g: 172, b: 230 } }
 ];
+
+const
 
 const black = [0, 0, 0], orange = [230, 159, 0], skyblue = [86, 180, 233];
 const green = [0, 158, 115], yellow = [240, 228, 66], blue = [0, 114, 178];
