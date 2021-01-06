@@ -269,6 +269,7 @@ function children_bc_change(element, bc) {
 // 背景色をユニバーサル色に近似する。
 // res: true = 背景色が設定されている, false = 設定されていない
 function bc_change_color(element) {
+	if( hasImage(element) || hasCdn(element) ) { return true };
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
 	let rgba = bc2rgba(bc);
 
@@ -380,6 +381,16 @@ function rgb2hsv(rgb) {
 	console.log(v);
 
 	return [h, s, v];
+}
+
+function hasImage(element) {
+	let img = getComputedStyle(element, null).getPropertyValue("background-image");
+	let s = img.indexOf('u');
+	return s != -1;
+}
+
+function hasCdn(element) {
+	return element.classList.contains("fa");
 }
 
 main();
