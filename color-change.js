@@ -68,29 +68,30 @@ async function font_change_color(element) {
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
 
-	let result_rgb = rgb_color.match(reg4rgb);
-	let result_rgba = rgb_color.match(reg4rgba);
-	let result2;
-	if (result_rgb === null && result_rgba === null) {
-		result2 = ['255', '255', '255'];
-	} else if (result_rgb !== null) {
-		result2 = result_rgb[0].split(',');
+	let matched_rgb = rgb_color.match(reg4rgb);
+	let matched_rgba = rgb_color.match(reg4rgba);
+	let result;
+	if (matched_rgb === null && matched_rgba === null) {
+		result = ['255', '255', '255'];
+	} else if (matched_rgb !== null) {
+		result = matched_rgb[0].split(',');
 	} else {
-		result2 = result_rgba[0].split(',');
+		result = matched_rgba[0].split(',');
 	}
 
-	let rgba = [];
-	rgba[0] = Number(result2[0]);
-	rgba[1] = Number(result2[1]);
-	rgba[2] = Number(result2[2]);
-	if (result2.length == 4) {
-		rgba[3] = Number(result2[3]);
+	// 色情報をRGBA形式で統一的に扱えるように加工する。
+	let rgba = [0, 0, 0, 0];
+	rgba[0] = Number(result[0]);
+	rgba[1] = Number(result[1]);
+	rgba[2] = Number(result[2]);
+	if (result.length == 4) {
+		rgba[3] = Number(result[3]);
 	} else {
-		rgba[3] = -1;
+		rgba[3] = 1;
 	}
 
 	// rgbの値によってsample_colorsに近似する
-	var new_rgba = classify_colors(rgba, accent_colors);
+	let new_rgba = classify_colors(rgba, accent_colors);
 
 	// 背景色とフォントの色の組合せを考える
 	let bc = element.style.backgroundColor;
@@ -106,19 +107,12 @@ async function font_change_color(element) {
 	if (Math.abs(bc_hsv[2] - conb_hsv[2]) < 10) {
 		conb_hsv[2] = Math.abs(100 - conb_hsv[2]);
 		conb = hsv2rgb(conb_hsv);
-		console.log(conb_hsv);
 	}
 
 	new_rgba = [conb[0], conb[1], conb[2], new_rgba[3]];
 
-	// 透明度の値に応じて値を設定
-	let new_rgba_str;
-	if (new_rgba[3] == -1) {
-		new_rgba_str = `rgb(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]})`;
-	} else {
-		new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
-	}
-
+	// 要素に新しい色を登録する
+	let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
 	element.style.color = new_rgba_str;
 
 	return;
