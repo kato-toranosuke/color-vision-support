@@ -32,6 +32,8 @@ const black = [0, 0, 0], orange = [230, 159, 0], skyblue = [86, 180, 233];
 const green = [0, 158, 115], yellow = [240, 228, 66], blue = [0, 114, 178];
 const red = [213, 94, 0], purple = [204, 121, 167], white = [255, 255, 255];
 
+// 検索結果ページ
+
 // 正規表現
 const reg4rgb = /(?<=rgb\().*(?=\))/;
 const reg4rgba = /(?<=rgba\().*(?=\))/;
@@ -101,9 +103,10 @@ async function font_change_color(element) {
 	let conb_hsv = rgb2hsv(conb);
 
 	// 明度差を判定
-	if (Math.abs(bc_hsv[2] - conb_hsv[2]) < 0.2) {
-		conb_hsv[2] = Math.abs(1.0 - conb_hsv[2])
+	if (Math.abs(bc_hsv[2] - conb_hsv[2]) < 10) {
+		conb_hsv[2] = Math.abs(100 - conb_hsv[2]);
 		conb = hsv2rgb(conb_hsv);
+		console.log(conb_hsv);
 	}
 
 	new_rgba = [conb[0], conb[1], conb[2], new_rgba[3]];
@@ -281,7 +284,7 @@ function children_bc_change(element, bc) {
 // 背景色をユニバーサル色に近似する。
 // res: true = 背景色が設定されている, false = 設定されていない
 function bc_change_color(element) {
-	if( hasImage(element) || hasCdn(element) ) { return true };
+	if (hasImage(element) || hasCdn(element)) { return true };
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
 	let rgba = bc2rgba(bc);
 
@@ -312,51 +315,52 @@ function bc2rgba(bc) {
 	return rgba;
 }
 
+/**
+ * hsv -> rgb
+ * @param {Array} hsv - h:[0,360] / s,v:[0,100]
+ * @returns {Array} - [r, g, b]
+ */
 function hsv2rgb(hsv) {
-	var h = hsv[0] / 60;
-	var s = hsv[1];
-	var v = hsv[2];
-	if (s == 0) return [v * 255, v * 255, v * 255];
+	let h = hsv[0];
+	let s = hsv[1];
+	let v = hsv[2];
+	if (h == 360) h = 0;
 
-	var rgb;
-	var i = parseInt(h);
-	var f = h - i;
-	var v1 = v * (1 - s);
-	var v2 = v * (1 - s * f);
-	var v3 = v * (1 - s * (1 - f));
+	let _h = (h / 60) % 1.0;
+	let _s = s / 100.0;
+	let _v = v / 100.0;
 
-	switch (i) {
-		case 0:
-		case 6:
-			rgb = [v, v3, v1];
-			break;
+	let rgb;
+	let a = _v * 255;
+	let b = _v * (1 - _s) * 255;
+	let c = _v * (1 - _s * _h) * 255;
+	let d = _v * (1 - _s * (1 - _h)) * 255;
 
-		case 1:
-			rgb = [v2, v, v1];
-			break;
-
-		case 2:
-			rgb = [v1, v, v3];
-			break;
-
-		case 3:
-			rgb = [v1, v2, v];
-			break;
-
-		case 4:
-			rgb = [v3, v1, v];
-			break;
-
-		case 5:
-			rgb = [v, v1, v2];
-			break;
+	if (s == 0) {
+		//　無彩色
+		rgb = [a, a, a];
+	} else if (h < 60) {
+		rgb = [a, d, b];
+	} else if (h < 120) {
+		rgb = [c, a, b];
+	} else if (h < 180) {
+		rgb = [b, a, d];
+	} else if (h < 240) {
+		rgb = [b, c, a];
+	} else if (h < 300) {
+		rgb = [d, b, a];
+	} else {
+		rgb = [a, b, c];
 	}
 
-	return rgb.map(function (value) {
-		return value * 255;
-	});
+	return rgb;
 }
 
+/**
+ * rgb -> hsvに変換する。
+ * @param {Array} rgb - [r, g, b]: value range is [0, 255]
+ * @return {Array} - [h, s, v]: h [0, 360] / s, v [0, 100]
+ */
 function rgb2hsv(rgb) {
 	var r = Number(rgb[0]) / 255;
 	var g = Number(rgb[1]) / 255;
@@ -370,6 +374,7 @@ function rgb2hsv(rgb) {
 
 	switch (min) {
 		case max:
+			// 無彩色の場合
 			h = 0;
 			break;
 
@@ -386,8 +391,8 @@ function rgb2hsv(rgb) {
 			break;
 	}
 
-	var s = max == 0 ? 0 : diff / max;
-	var v = max;
+	var s = max == 0 ? 0 : diff / max * 100;
+	var v = max * 100;
 
 	// console.log(v);
 
