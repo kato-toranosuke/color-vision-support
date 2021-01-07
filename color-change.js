@@ -32,6 +32,8 @@ const black = [0, 0, 0], orange = [230, 159, 0], skyblue = [86, 180, 233];
 const green = [0, 158, 115], yellow = [240, 228, 66], blue = [0, 114, 178];
 const red = [213, 94, 0], purple = [204, 121, 167], white = [255, 255, 255];
 
+// 検索結果ページ
+
 // 正規表現
 const reg4rgb = /(?<=rgb\().*(?=\))/;
 const reg4rgba = /(?<=rgba\().*(?=\))/;
@@ -42,102 +44,117 @@ function main() {
 	var body = document.getElementsByTagName('body')[0];
 
 	// body以下の全ての要素に対して背景色の色を近似する
-	children_bc_change(body, getComputedStyle(body, null).getPropertyValue("background-color"));
+	changeChildrenBgColor(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 	// body以下の全ての要素に対してフォントの色を近似する
-	children_color_change(body);
+	changeChildrenFontColor(body);
 }
 
 
 // 各要素に対して関数font_change_colorを適用する
-function children_color_change(element) {
+function changeChildrenFontColor(element) {
 	let children = element.children;
 
 	for (let child of children) {
 		if (child.children.length != 0) {
-			children_color_change(child);
+			changeChildrenFontColor(child);
 		}
-		font_change_color(child);
+		changeFontColor(child);
 	}
 }
 
 // 要素elementのフォントの色を近似し変更する
-async function font_change_color(element) {
+async function changeFontColor(element) {
 
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
 
-	let result_rgb = rgb_color.match(reg4rgb);
-	let result_rgba = rgb_color.match(reg4rgba);
-	let result2;
-	if (result_rgb === null && result_rgba === null) {
-		result2 = ['255', '255', '255'];
-	} else if (result_rgb !== null) {
-		result2 = result_rgb[0].split(',');
+	let matched_rgb = rgb_color.match(reg4rgb);
+	let matched_rgba = rgb_color.match(reg4rgba);
+	let result;
+	if (matched_rgb === null && matched_rgba === null) {
+		result = ['255', '255', '255'];
+	} else if (matched_rgb !== null) {
+		result = matched_rgb[0].split(',');
 	} else {
-		result2 = result_rgba[0].split(',');
+		result = matched_rgba[0].split(',');
 	}
 
-	let rgba = [];
-	rgba[0] = Number(result2[0]);
-	rgba[1] = Number(result2[1]);
-	rgba[2] = Number(result2[2]);
-	if (result2.length == 4) {
-		rgba[3] = Number(result2[3]);
+	// 色情報をRGBA形式で統一的に扱えるように加工する。
+	let rgba = [0, 0, 0, 0];
+	rgba[0] = Number(result[0]);
+	rgba[1] = Number(result[1]);
+	rgba[2] = Number(result[2]);
+	if (result.length == 4) {
+		rgba[3] = Number(result[3]);
 	} else {
-		rgba[3] = -1;
+		rgba[3] = 1;
 	}
 
 	// rgbの値によってsample_colorsに近似する
-	var new_rgba = classify_colors(rgba, accent_colors);
+	let new_rgba = classifyColors(rgba, accent_colors);
 
 	// 背景色とフォントの色の組合せを考える
 	let bc = element.style.backgroundColor;
 	let bc_rgba = bc2rgba(bc);
-	let conb = conbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
+	let conb = checkConbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
 
 	// 背景色と文字色の明度差を考慮する
-	// rgb -> hsv 変換
-	let bc_hsv = rgb2hsv(bc_rgba);
-	let conb_hsv = rgb2hsv(conb);
+	conb.push(new_rgba[3]); // rgbaにするための処理。将来的に廃止したい。
+	new_rgba = checkValueDiff(conb, bc_rgba);
 
-	// 明度差を判定
-	if (Math.abs(bc_hsv[2] - conb_hsv[2]) < 0.2) {
-		conb_hsv[2] = Math.abs(1.0 - conb_hsv[2])
-		conb = hsv2rgb(conb_hsv);
-	}
-
-	new_rgba = [conb[0], conb[1], conb[2], new_rgba[3]];
-
-	// 透明度の値に応じて値を設定
-	let new_rgba_str;
-	if (new_rgba[3] == -1) {
-		new_rgba_str = `rgb(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]})`;
-	} else {
-		new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
-	}
-
+	// 要素に新しい色を登録する
+	let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
 	element.style.color = new_rgba_str;
 
 	return;
 }
 
+// 明度差の考慮
+function checkValueDiff(fc_rgba, bc_rgba) {
+	let result = [0, 0, 0, 0];
+	// 透明度の保存
+	if (fc_rgba.length == 4) {
+		result[3] = fc_rgba[3];
+	} else {
+		result[3] = 1;
+	}
+
+	// rgb -> hsv 変換
+	let fc_hsv = rgb2hsv(fc_rgba);
+	let bc_hsv = rgb2hsv(bc_rgba);
+
+	// 明度差を判定
+	if (Math.abs(bc_hsv[2] - fc_hsv[2]) < 10) {
+		fc_hsv[2] = Math.abs(100 - fc_hsv[2]);
+		fc_rgba = hsv2rgb(fc_hsv);
+	}
+
+	// rgb値の格納
+	for (let i = 0; i < 3; i++) {
+		result[i] = fc_rgba[i];
+	}
+
+	console.log(bc_rgba);
+	return result;
+}
+
 // arg: rgbを表す数値の配列
 // res: sample_colorsに近似したrgbを表す数値の配列
-function classify_colors(rgba, sample_colors) {
+function classifyColors(rgba, sample_colors) {
 	let new_rgba;
 	let rgb = [rgba[0], rgba[1], rgba[2]];
 	if (Math.max(...rgb) - Math.min(...rgb) > 30) {
 		// 有彩色の場合
-		new_rgba = calc_approximate_color(rgba, sample_colors);
+		new_rgba = calcApproximateColor(rgba, sample_colors);
 	} else {
 		// 無彩色の場合
-		new_rgba = calc_approximate_color(rgba, non_colors);
+		new_rgba = calcApproximateColor(rgba, non_colors);
 	}
 
 	return new_rgba;
 }
 
-function calc_approximate_color(rgba, sample_colors) {
+function calcApproximateColor(rgba, sample_colors) {
 	let min_index = 0, min_dist = 1000000;
 	for (let i = 0; i < sample_colors.length; i++) {
 		const sample_rgb = sample_colors[i].rgb;
@@ -232,25 +249,25 @@ function isMatch(rgb1, rgb2) {
 // arg:  element: DOM要素, bc: 親の要素の背景色
 // 各要素に対して関数bc_change_colorを適用する
 // 背景色が未設定の場合は親の要素の設定に従う
-function children_bc_change(element, bc) {
+function changeChildrenBgColor(element, bc) {
 	// bodyの背景色が未設定のときに白色に変換する
 	if (bc.toString() == "rgba(0, 0, 0, 0)") { bc = "rgb(255, 255, 255)"; }
 	let children = element.children;
 
 	for (let child of children) {
-		if (!bc_change_color(child)) {
+		if (!changeBgColor(child)) {
 			child.style.backgroundColor = bc;
 		}
 		if (child.children.length != 0) {
-			children_bc_change(child, child.style.backgroundColor);
+			changeChildrenBgColor(child, child.style.backgroundColor);
 		}
 	}
 }
 
 // 背景色をユニバーサル色に近似する。
 // res: true = 背景色が設定されている, false = 設定されていない
-function bc_change_color(element) {
-	if( hasImage(element) || hasCdn(element) ) { return true };
+function changeBgColor(element) {
+	if (hasImage(element) || hasCdn(element)) { return true };
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
 	let rgba = bc2rgba(bc);
 
@@ -259,7 +276,7 @@ function bc_change_color(element) {
 		return false;
 	}
 	else {
-		let new_rgba = classify_colors(rgba, base_colors);
+		let new_rgba = classifyColors(rgba, base_colors);
 		let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
 		element.style.backgroundColor = new_rgba_str;
 		return true;
@@ -281,51 +298,52 @@ function bc2rgba(bc) {
 	return rgba;
 }
 
+/**
+ * hsv -> rgb
+ * @param {Array} hsv - h:[0,360] / s,v:[0,100]
+ * @returns {Array} - [r, g, b]
+ */
 function hsv2rgb(hsv) {
-	var h = hsv[0] / 60;
-	var s = hsv[1];
-	var v = hsv[2];
-	if (s == 0) return [v * 255, v * 255, v * 255];
+	let h = hsv[0];
+	let s = hsv[1];
+	let v = hsv[2];
+	if (h == 360) h = 0;
 
-	var rgb;
-	var i = parseInt(h);
-	var f = h - i;
-	var v1 = v * (1 - s);
-	var v2 = v * (1 - s * f);
-	var v3 = v * (1 - s * (1 - f));
+	let _h = (h / 60) % 1.0;
+	let _s = s / 100.0;
+	let _v = v / 100.0;
 
-	switch (i) {
-		case 0:
-		case 6:
-			rgb = [v, v3, v1];
-			break;
+	let rgb;
+	let a = _v * 255;
+	let b = _v * (1 - _s) * 255;
+	let c = _v * (1 - _s * _h) * 255;
+	let d = _v * (1 - _s * (1 - _h)) * 255;
 
-		case 1:
-			rgb = [v2, v, v1];
-			break;
-
-		case 2:
-			rgb = [v1, v, v3];
-			break;
-
-		case 3:
-			rgb = [v1, v2, v];
-			break;
-
-		case 4:
-			rgb = [v3, v1, v];
-			break;
-
-		case 5:
-			rgb = [v, v1, v2];
-			break;
+	if (s == 0) {
+		//　無彩色
+		rgb = [a, a, a];
+	} else if (h < 60) {
+		rgb = [a, d, b];
+	} else if (h < 120) {
+		rgb = [c, a, b];
+	} else if (h < 180) {
+		rgb = [b, a, d];
+	} else if (h < 240) {
+		rgb = [b, c, a];
+	} else if (h < 300) {
+		rgb = [d, b, a];
+	} else {
+		rgb = [a, b, c];
 	}
 
-	return rgb.map(function (value) {
-		return value * 255;
-	});
+	return rgb;
 }
 
+/**
+ * rgb -> hsvに変換する。
+ * @param {Array} rgb - [r, g, b]: value range is [0, 255]
+ * @return {Array} - [h, s, v]: h [0, 360] / s, v [0, 100]
+ */
 function rgb2hsv(rgb) {
 	var r = Number(rgb[0]) / 255;
 	var g = Number(rgb[1]) / 255;
@@ -339,6 +357,7 @@ function rgb2hsv(rgb) {
 
 	switch (min) {
 		case max:
+			// 無彩色の場合
 			h = 0;
 			break;
 
@@ -355,8 +374,8 @@ function rgb2hsv(rgb) {
 			break;
 	}
 
-	var s = max == 0 ? 0 : diff / max;
-	var v = max;
+	var s = max == 0 ? 0 : diff / max * 100;
+	var v = max * 100;
 
 	// console.log(v);
 
