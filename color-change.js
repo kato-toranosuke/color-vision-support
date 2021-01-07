@@ -99,17 +99,8 @@ async function changeFontColor(element) {
 	let conb = checkConbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
 
 	// 背景色と文字色の明度差を考慮する
-	// rgb -> hsv 変換
-	let bc_hsv = rgb2hsv(bc_rgba);
-	let conb_hsv = rgb2hsv(conb);
-
-	// 明度差を判定
-	if (Math.abs(bc_hsv[2] - conb_hsv[2]) < 10) {
-		conb_hsv[2] = Math.abs(100 - conb_hsv[2]);
-		conb = hsv2rgb(conb_hsv);
-	}
-
-	new_rgba = [conb[0], conb[1], conb[2], new_rgba[3]];
+	conb.push(new_rgba[3]); // rgbaにするための処理。将来的に廃止したい。
+	new_rgba = checkValueDiff(conb, bc_rgba);
 
 	// 要素に新しい色を登録する
 	let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
@@ -119,8 +110,32 @@ async function changeFontColor(element) {
 }
 
 // 明度差の考慮
-function checkValueDiff(params) {
+function checkValueDiff(fc_rgba, bc_rgba) {
+	let result = [0, 0, 0, 0];
+	// 透明度の保存
+	if (fc_rgba.length == 4) {
+		result[3] = fc_rgba[3];
+	} else {
+		result[3] = 1;
+	}
 
+	// rgb -> hsv 変換
+	let fc_hsv = rgb2hsv(fc_rgba);
+	let bc_hsv = rgb2hsv(bc_rgba);
+
+	// 明度差を判定
+	if (Math.abs(bc_hsv[2] - fc_hsv[2]) < 10) {
+		fc_hsv[2] = Math.abs(100 - fc_hsv[2]);
+		fc_rgba = hsv2rgb(fc_hsv);
+	}
+
+	// rgb値の格納
+	for (let i = 0; i < 3; i++) {
+		result[i] = fc_rgba[i];
+	}
+
+	console.log(bc_rgba);
+	return result;
 }
 
 // arg: rgbを表す数値の配列
