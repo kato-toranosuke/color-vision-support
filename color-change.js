@@ -171,7 +171,7 @@ function calcApproximateColor(rgba, sample_colors) {
 // arg:  fc:フォントの色  bc:背景色
 // 参考資料、実験により、背景色に対して認識しやすいフォントの色に変換する
 //NG: 暖色・寒色同士、明度が近い
-function conbination(fc, bc) {
+function checkConbination(fc, bc) {
 	// console.log(`fc=${fc}, bc=${bc}`);
 	if (isMatch(bc, base_colors[0].rgb)) { // ------------------- light_pink
 		if (isMatch(fc, non_colors[1].rgb)) { // light_grey
