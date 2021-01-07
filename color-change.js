@@ -44,26 +44,26 @@ function main() {
 	var body = document.getElementsByTagName('body')[0];
 
 	// body以下の全ての要素に対して背景色の色を近似する
-	children_bc_change(body, getComputedStyle(body, null).getPropertyValue("background-color"));
+	changeChildrenBgColor(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 	// body以下の全ての要素に対してフォントの色を近似する
-	children_color_change(body);
+	changeChildrenFontColor(body);
 }
 
 
 // 各要素に対して関数font_change_colorを適用する
-function children_color_change(element) {
+function changeChildrenFontColor(element) {
 	let children = element.children;
 
 	for (let child of children) {
 		if (child.children.length != 0) {
-			children_color_change(child);
+			changeChildrenFontColor(child);
 		}
-		font_change_color(child);
+		changeFontColor(child);
 	}
 }
 
 // 要素elementのフォントの色を近似し変更する
-async function font_change_color(element) {
+async function changeFontColor(element) {
 
 	let css = getComputedStyle(element, null);
 	let rgb_color = css.getPropertyValue("color");
@@ -91,12 +91,12 @@ async function font_change_color(element) {
 	}
 
 	// rgbの値によってsample_colorsに近似する
-	let new_rgba = classify_colors(rgba, accent_colors);
+	let new_rgba = classifyColors(rgba, accent_colors);
 
 	// 背景色とフォントの色の組合せを考える
 	let bc = element.style.backgroundColor;
 	let bc_rgba = bc2rgba(bc);
-	let conb = conbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
+	let conb = checkConbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
 
 	// 背景色と文字色の明度差を考慮する
 	// rgb -> hsv 変換
@@ -118,23 +118,28 @@ async function font_change_color(element) {
 	return;
 }
 
+// 明度差の考慮
+function checkValueDiff(params) {
+
+}
+
 // arg: rgbを表す数値の配列
 // res: sample_colorsに近似したrgbを表す数値の配列
-function classify_colors(rgba, sample_colors) {
+function classifyColors(rgba, sample_colors) {
 	let new_rgba;
 	let rgb = [rgba[0], rgba[1], rgba[2]];
 	if (Math.max(...rgb) - Math.min(...rgb) > 30) {
 		// 有彩色の場合
-		new_rgba = calc_approximate_color(rgba, sample_colors);
+		new_rgba = calcApproximateColor(rgba, sample_colors);
 	} else {
 		// 無彩色の場合
-		new_rgba = calc_approximate_color(rgba, non_colors);
+		new_rgba = calcApproximateColor(rgba, non_colors);
 	}
 
 	return new_rgba;
 }
 
-function calc_approximate_color(rgba, sample_colors) {
+function calcApproximateColor(rgba, sample_colors) {
 	let min_index = 0, min_dist = 1000000;
 	for (let i = 0; i < sample_colors.length; i++) {
 		const sample_rgb = sample_colors[i].rgb;
@@ -151,7 +156,7 @@ function calc_approximate_color(rgba, sample_colors) {
 // arg:  fc:フォントの色  bc:背景色
 // 参考資料、実験により、背景色に対して認識しやすいフォントの色に変換する
 //NG: 暖色・寒色同士、明度が近い
-function conbination(fc, bc) {
+function checkConbination(fc, bc) {
 	if (isMatch(bc, black)) { // orange, skyblue, green, yellow, red, purple, white
 		if (isMatch(fc, black)) {
 			fc = white;
@@ -260,24 +265,24 @@ function isMatch(rgb1, rgb2) {
 // arg:  element: DOM要素, bc: 親の要素の背景色
 // 各要素に対して関数bc_change_colorを適用する
 // 背景色が未設定の場合は親の要素の設定に従う
-function children_bc_change(element, bc) {
+function changeChildrenBgColor(element, bc) {
 	// bodyの背景色が未設定のときに白色に変換する
 	if (bc.toString() == "rgba(0, 0, 0, 0)") { bc = "rgb(255, 255, 255)"; }
 	let children = element.children;
 
 	for (let child of children) {
-		if (!bc_change_color(child)) {
+		if (!changeBgColor(child)) {
 			child.style.backgroundColor = bc;
 		}
 		if (child.children.length != 0) {
-			children_bc_change(child, child.style.backgroundColor);
+			changeChildrenBgColor(child, child.style.backgroundColor);
 		}
 	}
 }
 
 // 背景色をユニバーサル色に近似する。
 // res: true = 背景色が設定されている, false = 設定されていない
-function bc_change_color(element) {
+function changeBgColor(element) {
 	if (hasImage(element) || hasCdn(element)) { return true };
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
 	let rgba = bc2rgba(bc);
@@ -287,7 +292,7 @@ function bc_change_color(element) {
 		return false;
 	}
 	else {
-		let new_rgba = classify_colors(rgba, base_colors);
+		let new_rgba = classifyColors(rgba, base_colors);
 		let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
 		element.style.backgroundColor = new_rgba_str;
 		return true;
