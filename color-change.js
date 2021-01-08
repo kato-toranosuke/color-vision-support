@@ -33,6 +33,12 @@ const green = [0, 158, 115], yellow = [240, 228, 66], blue = [0, 114, 178];
 const red = [213, 94, 0], purple = [204, 121, 167], white = [255, 255, 255];
 
 // 検索結果ページ
+const search_engines = {
+	google: { hostname: "www.google.com", pathname: "/search" },
+	yahoo: { hostname: "search.yahoo.co.jp", pathname: "/search" },
+	bing: { hostname: "www.bing.com", pathname: "/search" }
+};
+let search_res_page_flag = false;
 
 // 正規表現
 const reg4rgb = /(?<=rgb\().*(?=\))/;
@@ -41,6 +47,9 @@ const reg4rgba = /(?<=rgba\().*(?=\))/;
 
 // この関数が実行される
 function main() {
+	search_res_page_flag = isSearchResPage();
+	console.log(search_res_page_flag);
+
 	var body = document.getElementsByTagName('body')[0];
 
 	// body以下の全ての要素に対して背景色の色を近似する
@@ -49,6 +58,25 @@ function main() {
 	changeChildrenFontColor(body);
 }
 
+// 検索結果ページか判定
+function isSearchResPage() {
+	const host = location.hostname;
+	const path = location.pathname;
+
+	for (let se in search_engines) {
+		if (search_engines[se].hostname == host) {
+			const regexp = new RegExp('^' + search_engines[se].pathname + '.*');
+			const match_arry = path.match(regexp)
+			if (match_arry !== null) {
+				return true;
+			}
+		}
+		// if (Object.hasOwnProperty.call(hostname, se)) {
+		// }
+	}
+
+	return false;
+}
 
 // 各要素に対して関数font_change_colorを適用する
 function changeChildrenFontColor(element) {
@@ -134,7 +162,6 @@ function checkValueDiff(fc_rgba, bc_rgba) {
 		result[i] = fc_rgba[i];
 	}
 
-	console.log(bc_rgba);
 	return result;
 }
 
@@ -376,8 +403,6 @@ function rgb2hsv(rgb) {
 
 	var s = max == 0 ? 0 : diff / max * 100;
 	var v = max * 100;
-
-	// console.log(v);
 
 	return [h, s, v];
 }
