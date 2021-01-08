@@ -100,7 +100,7 @@ async function changeFontColor(element) {
 
 	// 背景色と文字色の明度差を考慮する
 	conb.push(new_rgba[3]); // rgbaにするための処理。将来的に廃止したい。
-	new_rgba = checkValueDiff(conb, bc_rgba);
+	// new_rgba = checkValueDiff(conb, bc_rgba);
 
 	// 要素に新しい色を登録する
 	let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
@@ -134,7 +134,7 @@ function checkValueDiff(fc_rgba, bc_rgba) {
 		result[i] = fc_rgba[i];
 	}
 
-	console.log(bc_rgba);
+	// console.log(bc_rgba);
 	return result;
 }
 
@@ -248,15 +248,16 @@ function isMatch(rgb1, rgb2) {
 
 // arg:  element: DOM要素, bc: 親の要素の背景色
 // 各要素に対して関数bc_change_colorを適用する
-// 背景色が未設定の場合は親の要素の設定に従う
+// 背景色が未設定の場合は親の要素の背景色を透過させる
 function changeChildrenBgColor(element, bc) {
 	// bodyの背景色が未設定のときに白色に変換する
-	if (bc.toString() == "rgba(0, 0, 0, 0)") { bc = "rgb(255, 255, 255)"; }
+	if (bc.toString() == "rgba(0, 0, 0, 0)") { bc = "rgba(255, 255, 255, 1)"; }
 	let children = element.children;
 
 	for (let child of children) {
 		if (!changeBgColor(child)) {
-			child.style.backgroundColor = bc;
+			let rgba = bc2rgba(bc);
+			child.style.backgroundColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, 0)`;
 		}
 		if (child.children.length != 0) {
 			changeChildrenBgColor(child, child.style.backgroundColor);
@@ -267,7 +268,7 @@ function changeChildrenBgColor(element, bc) {
 // 背景色をユニバーサル色に近似する。
 // res: true = 背景色が設定されている, false = 設定されていない
 function changeBgColor(element) {
-	if (hasImage(element) || hasCdn(element)) { return true };
+	if (hasImage(element) || hasCdn(element)) { return false; }
 	let bc = getComputedStyle(element, null).getPropertyValue("background-color");
 	let rgba = bc2rgba(bc);
 
