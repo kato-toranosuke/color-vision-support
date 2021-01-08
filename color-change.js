@@ -251,7 +251,7 @@ function isMatch(rgb1, rgb2) {
 // 背景色が未設定の場合は親の要素の背景色を透過させる
 function changeChildrenBgColor(element, bc) {
 	// bodyの背景色が未設定のときに白色に変換する
-	if (bc.toString() == "rgba(0, 0, 0, 0)") { bc = "rgba(255, 255, 255, 1)"; }
+	// if (bc.toString() == "rgba(0, 0, 0, 0)") { bc = "rgba(255, 255, 255, 1)"; }
 	let children = element.children;
 
 	for (let child of children) {
