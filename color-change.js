@@ -41,22 +41,22 @@ function main() {
 	var body = document.getElementsByTagName('body')[0];
 
 	// body以下の全ての要素に対して背景色の色を近似する
+	if(getComputedStyle(body, null).getPropertyValue("background-color") == 'rgba(0, 0, 0, 0)') {
+		body.style.backgroundColor = 'rgba(255,255,255,1)';
+	}
 	changeChildrenBgColor(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 	// body以下の全ての要素に対してフォントの色を近似する
 	changeChildrenFontColor(body);
-	alert('complete!');
 }
 
 
 // 各要素に対して関数font_change_colorを適用する
 function changeChildrenFontColor(element) {
-	let children = element.children;
-
-	for (let child of children) {
-		if (child.children.length != 0) {
+	changeFontColor(element);
+	if (element.children.length != 0) {
+		for (let child of element.children) {
 			changeChildrenFontColor(child);
 		}
-		changeFontColor(child);
 	}
 }
 
@@ -149,7 +149,7 @@ function classifyColors(rgba, sample_colors) {
 		new_rgba = calcApproximateColor(rgba, non_colors);
 	}
 
-	console.log(`${rgba},  ${new_rgba}`);
+	// console.log(`${rgba},  ${new_rgba}`);
 	return new_rgba;
 }
 
@@ -165,16 +165,6 @@ function calcApproximateColor(rgba, sample_colors) {
 		}
 	}
 	return [sample_colors[min_name][0], sample_colors[min_name][1], sample_colors[min_name][2], rgba[3]];
-
-	for (let i = 0; i < sample_colors.length; i++) {
-		const sample_rgb = sample_colors[i].rgb;
-		let dist = Math.abs(rgba[0] - sample_rgb.r) + Math.abs(rgba[1] - sample_rgb.g) + Math.abs(rgba[2] - sample_rgb.b);
-		if (dist < min_dist) {
-			min_index = i;
-			min_dist = dist;
-		}
-	}
-	return [sample_colors[min_index].rgb.r, sample_colors[min_index].rgb.g, sample_colors[min_index].rgb.b, rgba[3]];
 }
 
 
@@ -182,7 +172,6 @@ function calcApproximateColor(rgba, sample_colors) {
 // 参考資料、実験により、背景色に対して認識しやすいフォントの色に変換する
 //NG: 暖色・寒色同士、明度が近い
 function checkConbination(fc, bc) {
-	return;
 	// console.log(`fc=${fc}, bc=${bc}`);
 	if (isMatch(bc, base_colors[0].rgb)) { // ------------------- light_pink
 		if (isMatch(fc, non_colors[1].rgb)) { // light_grey
@@ -261,19 +250,16 @@ function isMatch(rgb1, rgb2) {
 // 各要素に対して関数bc_change_colorを適用する
 // 背景色が未設定の場合は親の要素の背景色を透過させる
 function changeChildrenBgColor(element, bc) {
-	// bodyの背景色が未設定のときに白色に変換する
-	// if (bc.toString() == "rgba(0, 0, 0, 0)") { bc = "rgba(255, 255, 255, 1)"; }
-	let children = element.children;
-
-	for (let child of children) {
-		if (!changeBgColor(child)) {
-			let rgba = bc2rgba(bc);
-			child.style.backgroundColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, 0)`;
-		}
-		if (child.children.length != 0) {
-			changeChildrenBgColor(child, child.style.backgroundColor);
+	if (!changeBgColor(element)) {
+		let rgba = bc2rgba(bc);
+		element.style.backgroundColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, 0)`;
+	}
+	if (element.children.length != 0) {
+		for (let child of element.children) {
+			changeChildrenBgColor(child, element.style.backgroundColor);
 		}
 	}
+	return;
 }
 
 // 背景色をユニバーサル色に近似する。
@@ -289,8 +275,7 @@ function changeBgColor(element) {
 	}
 	else {
 		let new_rgba = classifyColors(rgba, base_colors);
-		let new_rgba_str = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
-		element.style.backgroundColor = new_rgba_str;
+		element.style.backgroundColor = `rgba(${new_rgba[0]}, ${new_rgba[1]}, ${new_rgba[2]}, ${new_rgba[3]})`;
 		return true;
 	}
 }
@@ -309,6 +294,17 @@ function bc2rgba(bc) {
 	}
 	return rgba;
 }
+
+function hasImage(element) {
+	let img = getComputedStyle(element, null).getPropertyValue("background-image");
+	let s = img.indexOf('u');
+	return s != -1;
+}
+
+function hasCdn(element) {
+	return element.classList.contains("fa");
+}
+
 
 /**
  * hsv -> rgb
@@ -394,14 +390,5 @@ function rgb2hsv(rgb) {
 	return [h, s, v];
 }
 
-function hasImage(element) {
-	let img = getComputedStyle(element, null).getPropertyValue("background-image");
-	let s = img.indexOf('u');
-	return s != -1;
-}
-
-function hasCdn(element) {
-	return element.classList.contains("fa");
-}
 
 main();
