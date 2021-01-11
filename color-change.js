@@ -1,36 +1,33 @@
 // 色を近似する
-const accent_colors = [
-	{ name: 'red', hsv: { h: 26, s: 1.0, v: 0.84 }, rgb: { r: 255, g: 75, b: 0 } },
-	{ name: 'yellow', hsv: { h: 56, s: 0.73, v: 0.94 }, rgb: { r: 255, g: 241, b: 0 } },
-	{ name: 'green', hsv: { h: 164, s: 1.0, v: 0.62 }, rgb: { r: 3, g: 175, b: 122 } },
-	{ name: 'blue', hsv: { h: 202, s: 1.0, v: 0.70 }, rgb: { r: 0, g: 90, b: 255 } },
-	{ name: 'skyblue', hsv: { h: 202, s: 0.63, v: 0.91 }, rgb: { r: 77, g: 196, b: 255 } },
-	{ name: 'pink', hsv: { h: 327, s: 0.41, v: 0.80 }, rgb: { r: 255, g: 128, b: 130 } },
-	{ name: 'orange', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 246, g: 170, b: 0 } },
-	{ name: 'purple', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 153, g: 0, b: 153 } },
-	{ name: 'brown', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 128, g: 64, b: 0 } }
-];
+const accent_colors = {
+	'red'	: [255, 75, 0], // { name: 'red', hsv: { h: 26, s: 1.0, v: 0.84 }, rgb: { r: 255, g: 75, b: 0 } },
+	'yellow': [255, 241, 0], // { name: 'yellow', hsv: { h: 56, s: 0.73, v: 0.94 }, rgb: { r: 255, g: 241, b: 0 } },
+	'green'	: [3, 175, 122], // { name: 'green', hsv: { h: 164, s: 1.0, v: 0.62 }, rgb: { r: 3, g: 175, b: 122 } },
+	'blue'	: [0, 90, 255],  // { name: 'blue', hsv: { h: 202, s: 1.0, v: 0.70 }, rgb: { r: 0, g: 90, b: 255 } },
+	'skyblue'	: [77, 196, 255], // { name: 'skyblue', hsv: { h: 202, s: 0.63, v: 0.91 }, rgb: { r: 77, g: 196, b: 255 } },
+	'pink'	: [255, 128, 130], // { name: 'pink', hsv: { h: 327, s: 0.41, v: 0.80 }, rgb: { r: 255, g: 128, b: 130 } },
+	'orange': [246, 170, 0], // { name: 'orange', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 246, g: 170, b: 0 } },
+	'purple': [153, 0, 153], // { name: 'purple', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 153, g: 0, b: 153 } },
+	'brown'	: [128, 64, 0] // { name: 'brown', hsv: { h: 41, s: 1.0, v: 0.90 }, rgb: { r: 128, g: 64, b: 0 } }
+};
 
-const base_colors = [
-	{ name: 'light_pink', rgb: { r: 255, g: 202, b: 191 } },
-	{ name: 'cream', rgb: { r: 255, g: 255, b: 128 } },
-	{ name: 'light_yg', rgb: { r: 216, g: 242, b: 85 } },
-	{ name: 'light_skyblue', rgb: { r: 191, g: 228, b: 255 } },
-	{ name: 'beige', rgb: { r: 255, g: 202, b: 128 } },
-	{ name: 'light_green', rgb: { r: 119, g: 217, b: 168 } },
-	{ name: 'light_purple', rgb: { r: 201, g: 172, b: 230 } }
-];
+const base_colors = {
+	'light_pink'	: [255, 202, 191], // { name: 'light_pink', rgb: { r: 255, g: 202, b: 191 } },
+	'cream'			: [255, 255, 128], // { name: 'cream', rgb: { r: 255, g: 255, b: 128 } },
+	'light_yg'		: [216, 242, 85], // { name: 'light_yg', rgb: { r: 216, g: 242, b: 85 } },
+	'light_skyblue'	: [191, 228, 255], // { name: 'light_skyblue', rgb: { r: 191, g: 228, b: 255 } },
+	'beige'			: [255, 202, 128], // { name: 'beige', rgb: { r: 255, g: 202, b: 128 } },
+	'light_green'	: [119, 217, 168], // { name: 'light_green', rgb: { r: 119, g: 217, b: 168 } },
+	'light_purple'	: [201, 172, 230] // { name: 'light_purple', rgb: { r: 201, g: 172, b: 230 } }
+};
 
-const non_colors = [
-	{ name: 'white', rgb: { r: 255, g: 255, b: 255 } },
-	{ name: 'light_gray', rgb: { r: 200, g: 200, b: 203 } },
-	{ name: 'gray', rgb: { r: 132, g: 145, b: 158 } },
-	{ name: 'black', rgb: { r: 0, g: 0, b: 0 } }
-];
 
-const black = [0, 0, 0], orange = [230, 159, 0], skyblue = [86, 180, 233];
-const green = [0, 158, 115], yellow = [240, 228, 66], blue = [0, 114, 178];
-const red = [213, 94, 0], purple = [204, 121, 167], white = [255, 255, 255];
+const non_colors = {
+	'white'		: [255, 255, 255], // { name: 'white', rgb: { r: 255, g: 255, b: 255 } },
+	'light_gray': [200, 200, 203], // { name: 'light_gray', rgb: { r: 200, g: 200, b: 203 } },
+	'gray'		: [132, 145, 158], // { name: 'gray', rgb: { r: 132, g: 145, b: 158 } },
+	'black'		: [0, 0, 0] 	   // { name: 'black', rgb: { r: 0, g: 0, b: 0 } }
+};
 
 // 検索結果ページ
 
@@ -47,6 +44,7 @@ function main() {
 	changeChildrenBgColor(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 	// body以下の全ての要素に対してフォントの色を近似する
 	changeChildrenFontColor(body);
+	alert('complete!');
 }
 
 
@@ -94,12 +92,12 @@ async function changeFontColor(element) {
 	let new_rgba = classifyColors(rgba, accent_colors);
 
 	// 背景色とフォントの色の組合せを考える
-	let bc = element.style.backgroundColor;
-	let bc_rgba = bc2rgba(bc);
-	let conb = checkConbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
+	// let bc = element.style.backgroundColor;
+	// let bc_rgba = bc2rgba(bc);
+	// let conb = checkConbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
 
 	// 背景色と文字色の明度差を考慮する
-	conb.push(new_rgba[3]); // rgbaにするための処理。将来的に廃止したい。
+	// conb.push(new_rgba[3]); // rgbaにするための処理。将来的に廃止したい。
 	// new_rgba = checkValueDiff(conb, bc_rgba);
 
 	// 要素に新しい色を登録する
@@ -151,11 +149,23 @@ function classifyColors(rgba, sample_colors) {
 		new_rgba = calcApproximateColor(rgba, non_colors);
 	}
 
+	console.log(`${rgba},  ${new_rgba}`);
 	return new_rgba;
 }
 
 function calcApproximateColor(rgba, sample_colors) {
-	let min_index = 0, min_dist = 1000000;
+	let min_name = '', min_dist = 1000000;
+	for (let name in sample_colors) {
+		let dist = 0;
+		for (let i=0; i<3; i++) {
+			dist += (rgba[i]-sample_colors[name][i])*(rgba[i]-sample_colors[name][i]);
+		}
+		if (dist < min_dist) {
+			min_name = name; min_dist = dist;
+		}
+	}
+	return [sample_colors[min_name][0], sample_colors[min_name][1], sample_colors[min_name][2], rgba[3]];
+
 	for (let i = 0; i < sample_colors.length; i++) {
 		const sample_rgb = sample_colors[i].rgb;
 		let dist = Math.abs(rgba[0] - sample_rgb.r) + Math.abs(rgba[1] - sample_rgb.g) + Math.abs(rgba[2] - sample_rgb.b);
@@ -172,6 +182,7 @@ function calcApproximateColor(rgba, sample_colors) {
 // 参考資料、実験により、背景色に対して認識しやすいフォントの色に変換する
 //NG: 暖色・寒色同士、明度が近い
 function checkConbination(fc, bc) {
+	return;
 	// console.log(`fc=${fc}, bc=${bc}`);
 	if (isMatch(bc, base_colors[0].rgb)) { // ------------------- light_pink
 		if (isMatch(fc, non_colors[1].rgb)) { // light_grey
