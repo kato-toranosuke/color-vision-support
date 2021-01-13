@@ -92,9 +92,9 @@ async function changeFontColor(element) {
 	let new_rgba = classifyColors(rgba, accent_colors);
 
 	// 背景色とフォントの色の組合せを考える
-	// let bc = element.style.backgroundColor;
-	// let bc_rgba = bc2rgba(bc);
-	// let conb = checkConbination(new_rgba.slice(0, 3), bc_rgba.slice(0, 3));
+	let bc = element.style.backgroundColor;
+	let bc_rgba = bc2rgba(bc);
+	new_rgba = checkConbination(new_rgba, bc_rgba);
 
 	// 背景色と文字色の明度差を考慮する
 	// conb.push(new_rgba[3]); // rgbaにするための処理。将来的に廃止したい。
@@ -107,34 +107,6 @@ async function changeFontColor(element) {
 	return;
 }
 
-// 明度差の考慮
-function checkValueDiff(fc_rgba, bc_rgba) {
-	let result = [0, 0, 0, 0];
-	// 透明度の保存
-	if (fc_rgba.length == 4) {
-		result[3] = fc_rgba[3];
-	} else {
-		result[3] = 1;
-	}
-
-	// rgb -> hsv 変換
-	let fc_hsv = rgb2hsv(fc_rgba);
-	let bc_hsv = rgb2hsv(bc_rgba);
-
-	// 明度差を判定
-	if (Math.abs(bc_hsv[2] - fc_hsv[2]) < 10) {
-		fc_hsv[2] = Math.abs(100 - fc_hsv[2]);
-		fc_rgba = hsv2rgb(fc_hsv);
-	}
-
-	// rgb値の格納
-	for (let i = 0; i < 3; i++) {
-		result[i] = fc_rgba[i];
-	}
-
-	// console.log(bc_rgba);
-	return result;
-}
 
 // arg: rgbを表す数値の配列
 // res: sample_colorsに近似したrgbを表す数値の配列
@@ -173,77 +145,360 @@ function calcApproximateColor(rgba, sample_colors) {
 //NG: 暖色・寒色同士、明度が近い
 function checkConbination(fc, bc) {
 	// console.log(`fc=${fc}, bc=${bc}`);
-	if (isMatch(bc, base_colors[0].rgb)) { // ------------------- light_pink
-		if (isMatch(fc, non_colors[1].rgb)) { // light_grey
-			// fc = white;
+	let res = [0, 0, 0, 1];
+	if (isMatch(bc, base_colors['light_pink'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, base_colors[1].rgb)) { // ------------ cream
-		if (isMatch(fc, non_colors[0].rgb)) { // white
-			// fc = white;
+	} else if (isMatch(bc, base_colors['cream'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, base_colors[2].rgb)) { // ------------ light_yg
-		if (isMatch(fc, accent_colors[1].rgb)) { // yellow
-			// fc = white;
-		} else if (isMatch(fc, accent_colors[6].rgb)) { // orange
-			// fc = white;
-		} else if (isMatch(fc, non_colors[1].rgb)) { // light_grey
-			// fc = white;
+	} else if (isMatch(bc, base_colors['light_yg'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, base_colors[3].rgb)) { // ------------ light_skyblue
-		if (isMatch(fc, accent_colors[1].rgb)) { // light_grey
-			// fc = yellow;
+	} else if (isMatch(bc, base_colors['light_skyblue'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, base_colors[4].rgb)) { // ------------ beige
-		if (isMatch(fc, accent_colors[5].rgb)) { // pink
-			fc = white;
+	} else if (isMatch(bc, base_colors['beige'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, base_colors[5].rgb)) { // ------------ light_green
-		if (isMatch(fc, accent_colors[5].rgb)) { // pink
-			// fc = red;
+	} else if (isMatch(bc, base_colors['light_green'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, base_colors[6].rgb)) { // ------------ light_purple
-		if (isMatch(fc, accent_colors[4].rgb)) { // skyblue
-			// fc = yellow;
-		} else if (isMatch(fc, non_colors[1].rgb)) { // light_grey
-			// fc = white;
-		} else if (isMatch(fc, non_colors[2].rgb)) { // grey
-			// fc = white;
+	} else if (isMatch(bc, base_colors['light_purple'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, non_colors[0].rgb)) { // ------------- white
-		if (isMatch(fc, accent_colors[1].rgb)) { // yellow
-			// fc = white;
+	} else if (isMatch(bc, non_colors['white'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, non_colors[1].rgb)) { // ------------- light_grey
-		if (isMatch(fc, accent_colors[1].rgb)) { // yellow
-			// fc = white;
+	} else if (isMatch(bc, non_colors['light_gray'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, non_colors[2].rgb)) { // ------------- gray
-		if (isMatch(fc, accent_colors[2].rgb)) { // green
-			// fc = white;
-		} else if (isMatch(fc, accent_colors[7].rgb)) { // purple
-			// fc = white;
-		} else if (isMatch(fc, accent_colors[8].rgb)) { // brown
-			// fc = white;
-		} else if (isMatch(fc, accent_colors[3].rgb)) { // blue
-			// fc = white;
-		} else if (isMatch(fc, accent_colors[5].rgb)) { // pink
-			// fc = white;
+	} else if (isMatch(bc, non_colors['gray'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
-	} else if (isMatch(bc, non_colors[3].rgb)) { // ------------ black
-		if (isMatch(fc, accent_colors[8].rgb)) { // brown
-			// fc = white;
-		} else if (isMatch(fc, accent_colors[7].rgb)) { // purple
-			// fc = white;
+	} else if (isMatch(bc, non_colors['black'])) {
+		if (isMatch(fc, accent_colors['red'])) {
+			res = accent_colors['red'];
+		} else if (isMatch(fc, accent_colors['yellow'])) {
+			res = accent_colors['yellow'];
+		} else if (isMatch(fc, accent_colors['green'])) {
+			res = accent_colors['green'];
+		} else if (isMatch(fc, accent_colors['blue'])) {
+			res = accent_colors['blue'];
+		} else if (isMatch(fc, accent_colors['skyblue'])) {
+			res = accent_colors['skyblue'];
+		} else if (isMatch(fc, accent_colors['pink'])) {
+			res = accent_colors['pink'];
+		} else if (isMatch(fc, accent_colors['orange'])) {
+			res = accent_colors['orange'];
+		} else if (isMatch(fc, accent_colors['purple'])) {
+			res = accent_colors['purple'];
+		} else if (isMatch(fc, accent_colors['brown'])) {
+			res = accent_colors['brown'];
+		} else if (isMatch(fc, non_colors['white'])) {
+			res = non_colors['white'];
+		} else if (isMatch(fc, non_colors['light_gray'])) {
+			res = non_colors['light_gray'];
+		} else if (isMatch(fc, non_colors['gray'])) {
+			res = non_colors['gray'];
+		} else if (isMatch(fc, non_colors['black'])) {
+			res = non_colors['black'];
 		}
 	}
 
-	return fc;
+	if (fc.length != 4) {
+		res[3] = 1;
+	} else {
+		res[3] = fc[3];
+	}
+	// console.log(res);
+	return res;
 }
 
 // rgb1とrgb2の数値の配列が一致しているか
 function isMatch(rgb1, rgb2) {
-	return rgb1[0] == rgb2.r && rgb1[1] == rgb2.g && rgb1[2] == rgb2.b;
+	return rgb1[0] == rgb2[0] && rgb1[1] == rgb2[1] && rgb1[2] == rgb2[2];
 }
+
+// 明度差の考慮
+function checkValueDiff(fc_rgba, bc_rgba) {
+	let result = [0, 0, 0, 0];
+	// 透明度の保存
+	if (fc_rgba.length == 4) {
+		result[3] = fc_rgba[3];
+	} else {
+		result[3] = 1;
+	}
+
+	// rgb -> hsv 変換
+	let fc_hsv = rgb2hsv(fc_rgba);
+	let bc_hsv = rgb2hsv(bc_rgba);
+
+	// 明度差を判定
+	if (Math.abs(bc_hsv[2] - fc_hsv[2]) < 10) {
+		fc_hsv[2] = Math.abs(100 - fc_hsv[2]);
+		fc_rgba = hsv2rgb(fc_hsv);
+	}
+
+	// rgb値の格納
+	for (let i = 0; i < 3; i++) {
+		result[i] = fc_rgba[i];
+	}
+
+	// console.log(bc_rgba);
+	return result;
+}
+
 
 
 // arg:  element: DOM要素, bc: 親の要素の背景色
