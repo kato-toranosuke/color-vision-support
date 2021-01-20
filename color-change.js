@@ -34,28 +34,45 @@ const red = [213, 94, 0], purple = [204, 121, 167], white = [255, 255, 255];
 
 // 検索結果ページ
 const search_engines = {
-	google: { hostname: "www.google.com", pathname: "/search" },
-	yahoo: { hostname: "search.yahoo.co.jp", pathname: "/search" },
+	google: { hostname: "www.google.com", pathname: "/search", visited_link_color: [95, 0, 139] },
+	yahoo: { hostname: "search.yahoo.co.jp", pathname: "/search", visited_link_color: [69, 30, 101] },
 	bing: { hostname: "www.bing.com", pathname: "/search" }
 };
 let search_res_page_flag = false;
+let se_name;
 
 // 正規表現
 const reg4rgb = /(?<=rgb\().*(?=\))/;
 const reg4rgba = /(?<=rgba\().*(?=\))/;
 
+// 訪問済みURLリスト
+let visited_urls_list = [];
 
 // この関数が実行される
 function main() {
+	// 検索結果ページか判定
 	search_res_page_flag = isSearchResPage();
-	console.log(search_res_page_flag);
+	// 検索結果ページであった場合にCSSを設定
+	if (search_res_page_flag) {
+		const visited_urls_obj = localStorage.getItem('visited_urls');
+		if (visited_urls_obj !== null) {
+			visited_urls_list = JSON.parse(visited_urls_obj);
+		}
+		console.log(visited_urls_list);
+
+		// CSSで対処しようとした場合→失敗
+		// const sheet = document.styleSheets[0];
+		// sheet.insertRule(`a:visited {background-color: rgb(${accent_colors[1].rgb.r}, ${accent_colors[1].rgb.g}, ${accent_colors[1].rgb.b})}`, 0);
+		// sheet.insertRule(`a {color: green}`, 0);
+	}
 
 	var body = document.getElementsByTagName('body')[0];
 
 	// body以下の全ての要素に対して背景色の色を近似する
 	changeChildrenBgColor(body, getComputedStyle(body, null).getPropertyValue("background-color"));
 	// body以下の全ての要素に対してフォントの色を近似する
-	changeChildrenFontColor(body);
+	changeChildrenFontColor(body, false);
+
 }
 
 // 検索結果ページか判定
@@ -68,25 +85,68 @@ function isSearchResPage() {
 			const regexp = new RegExp('^' + search_engines[se].pathname + '.*');
 			const match_arry = path.match(regexp)
 			if (match_arry !== null) {
+				se_name = se;
 				return true;
 			}
 		}
-		// if (Object.hasOwnProperty.call(hostname, se)) {
-		// }
 	}
 
 	return false;
 }
 
+// 検索結果ページにおいて、リンクをクリックした際にURLを保存する。
+function addVisitedUrlsList() {
+	const visited_urls_obj = localStorage.getItem('visited_urls');
+	let visited_urls;
+	if (visited_urls_obj !== null) {
+		// 配列に変換
+		visited_urls = JSON.parse(visited_urls_obj);
+		visited_urls.push(this.href);
+	} else {
+		visited_urls = new Array(this.href);
+	}
+
+	// 保存
+	const new_visited_urls_obj = JSON.stringify(visited_urls);
+	localStorage.setItem('visited_urls', new_visited_urls_obj);
+}
+
 // 各要素に対して関数font_change_colorを適用する
-function changeChildrenFontColor(element) {
+function changeChildrenFontColor(element, is_parent_element_a) {
+	// 訪問済みか未訪問の判定
+	let flag = is_parent_element_a;
+	if (search_res_page_flag) {
+		let tagname = element.tagName;
+		// aタグだった場合
+		if (tagname == 'A') {
+			// 訪問済みリストの中にURLが存在するか確認
+			for (const visited_url of visited_urls_list) {
+				if (visited_url == element.href) {
+					flag = true;
+				}
+			}
+			// イベントの設定
+			element.addEventListener('click', addVisitedUrlsList, false);
+			// flag = true;
+		}
+	}
+
 	let children = element.children;
 
 	for (let child of children) {
 		if (child.children.length != 0) {
-			changeChildrenFontColor(child);
+			// 子要素がある
+			changeChildrenFontColor(child, flag);
+		} else {
+			// 子要素がない
+			// 検索結果ページの内、aタグに関連するものでなければ、文字色変更する。そうでなければ、何もしない。
+			if (!is_parent_element_a) {
+				changeFontColor(child);
+			} else {
+				child.style.color = `rgba(${accent_colors[2].rgb.r}, ${accent_colors[2].rgb.g}, ${accent_colors[2].rgb.b}, 1})`;
+				console.log(element);
+			}
 		}
-		changeFontColor(child);
 	}
 }
 
