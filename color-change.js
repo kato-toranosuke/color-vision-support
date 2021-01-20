@@ -371,11 +371,11 @@ function checkConbination(fc, bc) {
 		} else if (isMatch(fc, accent_colors['brown'])) {
 			res = accent_colors['brown'];
 		} else if (isMatch(fc, non_colors['white'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['light_gray'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['gray'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['black'])) {
 			res = non_colors['black'];
 		}
@@ -399,11 +399,11 @@ function checkConbination(fc, bc) {
 		} else if (isMatch(fc, accent_colors['brown'])) {
 			res = accent_colors['brown'];
 		} else if (isMatch(fc, non_colors['white'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['light_gray'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['gray'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['black'])) {
 			res = non_colors['black'];
 		}
@@ -455,11 +455,11 @@ function checkConbination(fc, bc) {
 		} else if (isMatch(fc, accent_colors['brown'])) {
 			res = accent_colors['brown'];
 		} else if (isMatch(fc, non_colors['white'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['light_gray'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['gray'])) {
-			res = non_colors['gray'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['black'])) {
 			res = non_colors['black'];
 		}
@@ -483,9 +483,9 @@ function checkConbination(fc, bc) {
 		} else if (isMatch(fc, accent_colors['brown'])) {
 			res = accent_colors['brown'];
 		} else if (isMatch(fc, non_colors['white'])) {
-			res = non_colors['white'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['light_gray'])) {
-			res = non_colors['white'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['gray'])) {
 			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['black'])) {
@@ -511,9 +511,9 @@ function checkConbination(fc, bc) {
 		} else if (isMatch(fc, accent_colors['brown'])) {
 			res = accent_colors['brown'];
 		} else if (isMatch(fc, non_colors['white'])) {
-			res = non_colors['white'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['light_gray'])) {
-			res = non_colors['white'];
+			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['gray'])) {
 			res = non_colors['black'];
 		} else if (isMatch(fc, non_colors['black'])) {
