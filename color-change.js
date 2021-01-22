@@ -52,18 +52,13 @@ let visited_urls_list = [];
 function main() {
 	// 検索結果ページか判定
 	search_res_page_flag = isSearchResPage();
-	// 検索結果ページであった場合にCSSを設定
+	// 検索結果ページであった場合、localStrageにクリックしたリンクを保存する。
 	if (search_res_page_flag) {
 		const visited_urls_obj = localStorage.getItem('visited_urls');
 		if (visited_urls_obj !== null) {
 			visited_urls_list = JSON.parse(visited_urls_obj);
 		}
 		console.log(visited_urls_list);
-
-		// CSSで対処しようとした場合→失敗
-		// const sheet = document.styleSheets[0];
-		// sheet.insertRule(`a:visited {background-color: rgb(${accent_colors[1].rgb.r}, ${accent_colors[1].rgb.g}, ${accent_colors[1].rgb.b})}`, 0);
-		// sheet.insertRule(`a {color: green}`, 0);
 	}
 
 	var body = document.getElementsByTagName('body')[0];
@@ -143,8 +138,9 @@ function changeChildrenFontColor(element, is_parent_element_a) {
 			if (!is_parent_element_a) {
 				changeFontColor(child);
 			} else {
-				child.style.color = `rgba(${accent_colors[2].rgb.r}, ${accent_colors[2].rgb.g}, ${accent_colors[2].rgb.b}, 1})`;
-				console.log(element);
+				// 訪問済みのサイトのリンク色を変更
+				const visited_rgb_str = `rgb(${accent_colors[2].rgb.r}, ${accent_colors[2].rgb.g}, ${accent_colors[2].rgb.b})`;
+				child.style.color = visited_rgb_str;
 			}
 		}
 	}
@@ -259,7 +255,6 @@ function calcApproximateColor(rgba, sample_colors) {
 // 参考資料、実験により、背景色に対して認識しやすいフォントの色に変換する
 //NG: 暖色・寒色同士、明度が近い
 function checkConbination(fc, bc) {
-	// console.log(`fc=${fc}, bc=${bc}`);
 	if (isMatch(bc, base_colors[0].rgb)) { // ------------------- light_pink
 		if (isMatch(fc, non_colors[1].rgb)) { // light_grey
 			// fc = white;
@@ -373,7 +368,6 @@ function changeBgColor(element) {
 // 文字列のrgb値から数値の配列に変換する
 // res: [rの値, gの値, bの値, aの値]
 function bc2rgba(bc) {
-	// console.log(bc);
 	let start = bc.indexOf('(');
 	let end = bc.indexOf(')');
 	let str = bc.substr(start + 1, end - start - 1).split(',');
